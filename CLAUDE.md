@@ -40,18 +40,50 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Development Setup
 
-1. Initialize Next.js project with TypeScript
-2. Set up Supabase project and configure auth
-3. Configure Together.ai API integration
-4. Implement usage tracking and limits
+### 1. Database Setup
+Run the SQL in `supabase-schema.sql` in your Supabase project:
+- Go to Supabase Dashboard → SQL Editor
+- Copy and execute the entire schema file
+- This creates tables: profiles, chat_sessions, prompts
+- Sets up RLS policies and triggers
+
+### 2. Environment Variables
+API keys are configured in `.env.local`:
+- ✅ Supabase URL and keys configured
+- ✅ Together.ai API key configured
+
+### 3. Test Setup  
+- Run `npm run dev` - Development server on http://localhost:3001
+- Test APIs: `curl http://localhost:3001/api/test`
 
 ## Commands
 
-TBD - Will include standard Next.js commands:
-- `npm run dev` - Development server
+- `npm run dev` - Development server (runs on port 3001)
 - `npm run build` - Production build
-- `npm run test` - Run tests
-- `npm run lint` - Code linting
+- `npm run lint` - Code linting  
+- `npm run type-check` - TypeScript type checking
+
+## Brand Colors
+
+Optimi brand colors are configured in Tailwind CSS as `optimi-*`:
+
+**Primary Colors:**
+- `optimi-primary` - #283791 (RGB: 40/55/145, CMYK: 100/90/5/0)
+- `optimi-blue` - #0078FF (RGB: 0/120/255, CMYK: 80/55/0/0)
+
+**Accent Colors:**
+- `optimi-green` - #00C896 (RGB: 0/200/150, CMYK: 70/0/55/0)
+- `optimi-yellow` - #FFDC00 (RGB: 255/220/0, CMYK: 0/10/100/0)
+
+**Neutral:**
+- `optimi-gray` - #464650 (RGB: 70/70/80, CMYK: 0/0/0/90)
+
+**Usage in CSS:**
+```css
+bg-optimi-primary
+text-optimi-blue
+border-optimi-green
+```
 
 ## Environment Variables
 

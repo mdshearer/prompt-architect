@@ -6,7 +6,15 @@ module.exports = {
     './src/app/**/*.{js,ts,jsx,tsx,mdx}',
   ],
   theme: {
-    extend: {},
+    extend: {
+      colors: {
+        'optimi-primary': '#283791',
+        'optimi-blue': '#0078FF', 
+        'optimi-green': '#00C896',
+        'optimi-yellow': '#FFDC00',
+        'optimi-gray': '#464650',
+      },
+    },
   },
   plugins: [],
 }
