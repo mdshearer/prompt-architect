@@ -91,6 +91,28 @@ export default function ChatContainer({ category, onClose }: ChatContainerProps)
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
   }
 
+  const handlePromptGenerated = (prompt: string) => {
+    // Add the generated prompt as a user message
+    const promptMessage: Message = {
+      id: Date.now().toString(),
+      content: `Here's my generated prompt:\n\n${prompt}`,
+      role: 'user',
+      timestamp: new Date(),
+      status: 'sent'
+    }
+    setMessages(prev => [...prev, promptMessage])
+
+    // Add a congratulatory AI response
+    const responseMessage: Message = {
+      id: (Date.now() + 1).toString(),
+      content: "🎉 **Excellent work!** You've created a professional-grade prompt.\n\nYou can now:\n- **Copy and use** this prompt immediately\n- **Test it** on your preferred AI platform\n- **Refine it** based on your results\n- **Save it** for future use\n\nWant to create another prompt type or optimize this one further?",
+      role: 'assistant',
+      timestamp: new Date(),
+      status: 'sent'
+    }
+    setMessages(prev => [...prev, responseMessage])
+  }
+
   const handleSendMessage = async (content: string) => {
     if (!content.trim() || isLoading) return
 
@@ -176,6 +198,7 @@ export default function ChatContainer({ category, onClose }: ChatContainerProps)
           isLoading={isLoading}
           category={category}
           messagesEndRef={messagesEndRef}
+          onPromptGenerated={handlePromptGenerated}
         />
         
         <InputArea

@@ -26,9 +26,10 @@ interface MessageListProps {
   isLoading: boolean
   category: 'custom_instructions' | 'projects_gems' | 'threads'
   messagesEndRef: RefObject<HTMLDivElement>
+  onPromptGenerated?: (prompt: string) => void
 }
 
-export default function MessageList({ messages, isLoading, category, messagesEndRef }: MessageListProps) {
+export default function MessageList({ messages, isLoading, category, messagesEndRef, onPromptGenerated }: MessageListProps) {
   return (
     <div className="flex-1 overflow-y-auto">
       <div className="p-6 space-y-6">
@@ -38,6 +39,7 @@ export default function MessageList({ messages, isLoading, category, messagesEnd
             message={message}
             category={category}
             isLatest={index === messages.length - 1}
+            onPromptGenerated={onPromptGenerated}
           />
         ))}
         

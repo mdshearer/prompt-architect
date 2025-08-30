@@ -25,9 +25,10 @@ interface MessageBubbleProps {
   message: Message
   category: 'custom_instructions' | 'projects_gems' | 'threads'
   isLatest: boolean
+  onPromptGenerated?: (prompt: string) => void
 }
 
-export default function MessageBubble({ message, category, isLatest }: MessageBubbleProps) {
+export default function MessageBubble({ message, category, isLatest, onPromptGenerated }: MessageBubbleProps) {
   const [copied, setCopied] = useState(false)
 
   const handleCopy = async () => {
@@ -135,6 +136,14 @@ export default function MessageBubble({ message, category, isLatest }: MessageBu
                 </span>
               </div>
             </div>
+          )}
+
+          {/* Show Builder Trigger for next action */}
+          {message.ui_elements?.next_action && onPromptGenerated && (
+            <PromptBuilderTrigger
+              category={category}
+              onPromptGenerated={onPromptGenerated}
+            />
           )}
           
           <div className="flex items-center justify-between mt-3">

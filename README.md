@@ -6,8 +6,13 @@ A lead magnet web application for Optimi that helps users build better AI prompt
 
 ✅ **Enhanced Chat Interface**: Premium messaging experience with professional chat bubbles, typing indicators, and smooth animations  
 ✅ **Educational Framework**: Conversational coaching for Custom Instructions, Projects/Gems, and Thread Prompts using OPTIMI methodology  
+✅ **Interactive Prompt Builders**: Step-by-step wizards with live preview, examples, and copy-ready output  
+   - **OPTIMI Framework Builder**: Universal thread prompts that work on any AI platform
+   - **Custom Instructions Builder**: Persistent behavior for ChatGPT & Claude Pro  
+   - **Projects/Gems Builder**: Specialized AI experts with domain knowledge
 ✅ **Sophisticated Message System**: Real-time status indicators, copy-to-clipboard, multi-line input with auto-resize  
 ✅ **Expert AI Coaching**: Specialized system prompts with educational content and progressive learning  
+✅ **Smart Conversation Flow**: Context-aware responses that trigger appropriate builders based on user readiness  
 ✅ **Usage Management**: Smart limits with upgrade prompts and progress tracking  
 ✅ **Responsive Design**: Mobile-optimized interface with Optimi brand colors  
 ✅ **Platform Integration**: Cross-platform compatibility guidance (ChatGPT, Claude, Gemini, Copilot)  
