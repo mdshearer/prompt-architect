@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import ChatInterface from '@/components/ChatInterface'
+import ChatContainer from '@/components/chat/ChatContainer'
 
 type PromptCategory = 'custom_instructions' | 'projects_gems' | 'threads'
 
@@ -78,9 +78,9 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Chat Interface Modal */}
+      {/* Enhanced Chat Interface */}
       {selectedCategory && (
-        <ChatInterface
+        <ChatContainer
           category={selectedCategory}
           onClose={handleCloseChat}
         />
