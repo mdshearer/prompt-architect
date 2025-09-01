@@ -1,5 +1,7 @@
 # Prompt Architect
 
+Next job: run comprehensive tests
+
 A lead magnet web application for Optimi that helps users build better AI prompts through interactive conversations.
 
 ## Features
