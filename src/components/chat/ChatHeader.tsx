@@ -14,22 +14,22 @@ export default function ChatHeader({ category, usageCount, maxUsage, onClose }: 
     switch (category) {
       case 'custom_instructions':
         return {
-          title: 'Custom Instructions Coach',
+          title: 'Custom Instructions Builder',
           subtitle: 'Build persistent AI behavior that works across all conversations',
           color: 'optimi-primary',
           bgColor: 'bg-optimi-primary'
         }
       case 'projects_gems':
         return {
-          title: 'Projects & Gems Coach', 
+          title: 'Projects & Gems Builder', 
           subtitle: 'Create specialized AI experts for your domain',
           color: 'optimi-green',
           bgColor: 'bg-optimi-green'
         }
       case 'threads':
         return {
-          title: 'Thread Prompts Coach',
-          subtitle: 'Master the OPTIMI framework for perfect results',
+          title: 'Thread Prompts Builder',
+          subtitle: 'Utilize the OPTIMI framework for optimal results',
           color: 'optimi-blue', 
           bgColor: 'bg-optimi-blue'
         }
@@ -68,8 +68,8 @@ export default function ChatHeader({ category, usageCount, maxUsage, onClose }: 
             </div>
             
             {usageCount >= maxUsage && (
-              <div className="text-xs bg-optimi-yellow text-optimi-gray px-3 py-1 rounded-full font-medium">
-                Ready to upgrade? Get 10 more + advanced features
+              <div className="text-xs bg-optimi-yellow/20 text-gray-800 px-3 py-1 rounded-full font-medium">
+                Upgrade for additional sessions + advanced features
               </div>
             )}
           </div>

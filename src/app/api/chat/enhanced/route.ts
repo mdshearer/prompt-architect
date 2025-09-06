@@ -113,7 +113,7 @@ export async function POST(request: NextRequest) {
     const { message, category, history, usage_count }: EnhancedChatRequest = await request.json()
 
     // Determine conversation stage and appropriate response strategy
-    const conversationHistory = history.filter(msg => msg.role !== 'system').slice(-8)
+    const conversationHistory = history.slice(-8)
     const isEarlyConversation = conversationHistory.length <= 2
     
     // Build enhanced context with educational guidance

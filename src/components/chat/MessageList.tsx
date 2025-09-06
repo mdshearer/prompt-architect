@@ -25,7 +25,7 @@ interface MessageListProps {
   messages: Message[]
   isLoading: boolean
   category: 'custom_instructions' | 'projects_gems' | 'threads'
-  messagesEndRef: RefObject<HTMLDivElement>
+  messagesEndRef: RefObject<HTMLDivElement | null>
   onPromptGenerated?: (prompt: string) => void
 }
 

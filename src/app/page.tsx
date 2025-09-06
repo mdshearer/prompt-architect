@@ -17,62 +17,64 @@ export default function Home() {
   }
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-blue-50 to-blue-100">
+    <main className="min-h-screen bg-gray-50">
       <div className="container mx-auto px-4 py-8">
-        <header className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-optimi-primary mb-4">
+        <header className="text-center mb-16">
+          <h1 className="text-5xl font-bold text-gray-900 mb-6 tracking-tight">
             Prompt Architect
           </h1>
-          <p className="text-xl text-optimi-gray max-w-2xl mx-auto">
+          <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
             Build better AI prompts with expert guidance. Optimize your custom instructions, 
-            projects, and conversation threads with AI-powered assistance from <span className="font-semibold text-optimi-blue">Optimi</span>.
+            projects, and conversation threads with AI-powered assistance from <span className="font-semibold text-optimi-primary">Optimi</span>.
           </p>
         </header>
 
         <div className="max-w-4xl mx-auto bg-white rounded-xl shadow-lg overflow-hidden">
           <div className="p-8">
-            <div className="grid md:grid-cols-3 gap-6 mb-8">
+            <div className="grid md:grid-cols-3 gap-8 mb-12">
               <button
                 onClick={() => handleCategorySelect('custom_instructions')}
-                className="text-center p-6 bg-blue-50 hover:bg-blue-100 rounded-lg transition duration-200 border-2 border-transparent hover:border-optimi-blue"
+                className="text-center p-8 bg-white hover:bg-gray-50 rounded-xl transition-all duration-200 border border-gray-200 hover:border-optimi-primary hover:shadow-md group"
               >
-                <div className="w-12 h-12 bg-optimi-primary rounded-full flex items-center justify-center mx-auto mb-4">
-                  <span className="text-white font-bold">CI</span>
+                <div className="w-16 h-16 bg-gray-100 rounded-xl flex items-center justify-center mx-auto mb-6 group-hover:bg-optimi-primary group-hover:text-white transition-colors">
+                  <span className="text-gray-600 font-semibold text-lg group-hover:text-white">CI</span>
                 </div>
-                <h3 className="font-semibold text-optimi-gray mb-2">Custom Instructions</h3>
-                <p className="text-sm text-optimi-gray">Optimize your system prompts and custom instructions</p>
+                <h3 className="text-xl font-semibold text-gray-900 mb-3">Custom Instructions</h3>
+                <p className="text-gray-600 leading-relaxed">Optimize your system prompts and custom instructions for better AI interactions</p>
               </button>
               
               <button
                 onClick={() => handleCategorySelect('projects_gems')}
-                className="text-center p-6 bg-green-50 hover:bg-green-100 rounded-lg transition duration-200 border-2 border-transparent hover:border-optimi-green"
+                className="text-center p-8 bg-white hover:bg-gray-50 rounded-xl transition-all duration-200 border border-gray-200 hover:border-optimi-primary hover:shadow-md group"
               >
-                <div className="w-12 h-12 bg-optimi-green rounded-full flex items-center justify-center mx-auto mb-4">
-                  <span className="text-white font-bold">PG</span>
+                <div className="w-16 h-16 bg-gray-100 rounded-xl flex items-center justify-center mx-auto mb-6 group-hover:bg-optimi-primary group-hover:text-white transition-colors">
+                  <span className="text-gray-600 font-semibold text-lg group-hover:text-white">PG</span>
                 </div>
-                <h3 className="font-semibold text-optimi-gray mb-2">Projects & Gems</h3>
-                <p className="text-sm text-optimi-gray">Develop powerful project templates and gems</p>
+                <h3 className="text-xl font-semibold text-gray-900 mb-3">Projects & Gems</h3>
+                <p className="text-gray-600 leading-relaxed">Develop powerful project templates and specialized AI tools</p>
               </button>
               
               <button
                 onClick={() => handleCategorySelect('threads')}
-                className="text-center p-6 bg-yellow-50 hover:bg-yellow-100 rounded-lg transition duration-200 border-2 border-transparent hover:border-optimi-yellow"
+                className="text-center p-8 bg-white hover:bg-gray-50 rounded-xl transition-all duration-200 border border-gray-200 hover:border-optimi-primary hover:shadow-md group"
               >
-                <div className="w-12 h-12 bg-optimi-blue rounded-full flex items-center justify-center mx-auto mb-4">
-                  <span className="text-white font-bold">TC</span>
+                <div className="w-16 h-16 bg-gray-100 rounded-xl flex items-center justify-center mx-auto mb-6 group-hover:bg-optimi-primary group-hover:text-white transition-colors">
+                  <span className="text-gray-600 font-semibold text-lg group-hover:text-white">TC</span>
                 </div>
-                <h3 className="font-semibold text-optimi-gray mb-2">Thread Conversations</h3>
-                <p className="text-sm text-optimi-gray">Structure better conversation flows and threads</p>
+                <h3 className="text-xl font-semibold text-gray-900 mb-3">Thread Conversations</h3>
+                <p className="text-gray-600 leading-relaxed">Structure better conversation flows and optimize thread management</p>
               </button>
             </div>
 
             <div className="text-center">
-              <p className="text-sm text-optimi-gray mb-4">
-                Choose a category above to start building your prompt
+              <p className="text-gray-600 mb-6">
+                Select a category above to begin optimizing your prompts
               </p>
-              <p className="text-sm text-gray-500">
-                Free tier: 3 conversations per category • Login for 10 more
-              </p>
+              <div className="inline-flex items-center space-x-2 text-sm text-gray-500 bg-gray-50 px-4 py-2 rounded-lg">
+                <span>Free tier: 3 conversations per category</span>
+                <span className="text-gray-300">•</span>
+                <span>Login for additional sessions</span>
+              </div>
             </div>
           </div>
         </div>

@@ -105,7 +105,7 @@ export default function ChatContainer({ category, onClose }: ChatContainerProps)
     // Add a congratulatory AI response
     const responseMessage: Message = {
       id: (Date.now() + 1).toString(),
-      content: "🎉 **Excellent work!** You've created a professional-grade prompt.\n\nYou can now:\n- **Copy and use** this prompt immediately\n- **Test it** on your preferred AI platform\n- **Refine it** based on your results\n- **Save it** for future use\n\nWant to create another prompt type or optimize this one further?",
+      content: "**Prompt Generated Successfully**\n\nYour professional prompt has been created and is ready for use. Next steps:\n\n- **Copy and implement** this prompt in your preferred AI platform\n- **Test the results** and evaluate performance\n- **Refine as needed** based on your specific requirements\n- **Document** for future reference\n\nWould you like to create another prompt or optimize this implementation?",
       role: 'assistant',
       timestamp: new Date(),
       status: 'sent'
@@ -172,7 +172,7 @@ export default function ChatContainer({ category, onClose }: ChatContainerProps)
     } catch (error) {
       const errorMessage: Message = {
         id: (Date.now() + 1).toString(),
-        content: 'I apologize, but I encountered an error. Please try again, and I\'ll do my best to help you build an amazing prompt!',
+        content: 'A technical error occurred while processing your request. Please try again, and I will assist you in developing your prompt.',
         role: 'assistant',
         timestamp: new Date(),
         status: 'error'
