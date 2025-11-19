@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef, KeyboardEvent } from 'react'
+import { useState, useRef, KeyboardEvent, useMemo } from 'react'
 import { Send, Sparkles, Zap } from 'lucide-react'
 
 interface InputAreaProps {
@@ -34,9 +34,20 @@ export default function InputArea({ onSendMessage, disabled, usageCount, maxUsag
     }
   }
 
+  /**
+   * Handles textarea input changes and auto-resizing behavior.
+   *
+   * Auto-resize logic:
+   * 1. Reset height to 'auto' to get accurate scrollHeight measurement
+   * 2. Calculate new height based on content (scrollHeight)
+   * 3. Limit maximum height to 120px to prevent excessive vertical growth
+   * 4. This creates a smooth expanding textarea that stops at ~4 lines
+   *
+   * @param e - React change event from textarea
+   */
   const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setInput(e.target.value)
-    
+
     // Auto-resize textarea
     const textarea = e.target
     textarea.style.height = 'auto'
@@ -45,19 +56,21 @@ export default function InputArea({ onSendMessage, disabled, usageCount, maxUsag
 
   const isAtLimit = usageCount >= maxUsage
 
-  const getPlaceholderText = () => {
+  // Memoize placeholder text to avoid recalculation on every render
+  const placeholderText = useMemo(() => {
     if (isAtLimit) return "Free tier limit reached. Sign up for additional sessions."
-    
+
     const suggestions = [
       "Describe your role and specific prompt requirements...",
-      "What type of AI assistance do you need to optimize...", 
+      "What type of AI assistance do you need to optimize...",
       "Outline your current workflow challenges...",
       "Specify your target audience and objectives...",
       "Detail your subject matter expertise area..."
     ]
-    
+
+    // Select random suggestion on mount, stable during component lifecycle
     return suggestions[Math.floor(Math.random() * suggestions.length)]
-  }
+  }, [isAtLimit])
 
   return (
     <div className="border-t border-gray-200 p-4 bg-gray-50">
@@ -97,7 +110,7 @@ export default function InputArea({ onSendMessage, disabled, usageCount, maxUsag
             value={input}
             onChange={handleInputChange}
             onKeyDown={handleKeyDown}
-            placeholder={getPlaceholderText()}
+            placeholder={placeholderText}
             disabled={disabled}
             rows={1}
             className="w-full resize-none rounded-xl border border-gray-300 px-4 py-3 pr-12 focus:outline-none focus:ring-2 focus:ring-optimi-blue focus:border-transparent disabled:bg-gray-100 disabled:text-gray-500 text-sm leading-relaxed"

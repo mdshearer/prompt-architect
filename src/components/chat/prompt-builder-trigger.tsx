@@ -2,9 +2,9 @@
 
 import { useState } from 'react'
 import { Zap, Target, Brain, MessageSquare } from 'lucide-react'
-import OptimiBuilder from '../prompt-builders/OptimiBuilder'
-import CustomInstructionsBuilder from '../prompt-builders/CustomInstructionsBuilder'
-import ProjectsGemsBuilder from '../prompt-builders/ProjectsGemsBuilder'
+import OptimiBuilder from '../prompt-builders/optimi-builder'
+import CustomInstructionsBuilder from '../prompt-builders/custom-instructions-builder'
+import ProjectsGemsBuilder from '../prompt-builders/projects-gems-builder'
 
 interface PromptBuilderTriggerProps {
   category: 'custom_instructions' | 'projects_gems' | 'threads'

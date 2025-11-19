@@ -1,8 +1,8 @@
 'use client'
 
 import { RefObject } from 'react'
-import MessageBubble from './MessageBubble'
-import TypingIndicator from './TypingIndicator'
+import MessageBubble from './message-bubble'
+import TypingIndicator from './typing-indicator'
 
 interface Message {
   id: string

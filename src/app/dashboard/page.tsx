@@ -1,9 +1,9 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import DashboardStats from '@/components/dashboard/DashboardStats'
-import RecentActivity from '@/components/dashboard/RecentActivity'
-import QuickActions from '@/components/dashboard/QuickActions'
+import DashboardStats from '@/components/dashboard/dashboard-stats'
+import RecentActivity from '@/components/dashboard/recent-activity'
+import QuickActions from '@/components/dashboard/quick-actions'
 import { ArrowLeft } from 'lucide-react'
 import Link from 'next/link'
 

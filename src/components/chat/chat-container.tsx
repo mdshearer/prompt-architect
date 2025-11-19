@@ -1,9 +1,10 @@
 'use client'
 
 import { useState, useRef, useEffect } from 'react'
-import MessageList from './MessageList'
-import InputArea from './InputArea'
-import ChatHeader from './ChatHeader'
+import MessageList from './message-list'
+import InputArea from './input-area'
+import ChatHeader from './chat-header'
+import { MAX_FREE_MESSAGES, CONVERSATION_CONTEXT_LIMIT_ENHANCED, API_TIMEOUT_MS } from '@/lib/constants'
 
 interface UIElements {
   show_examples?: boolean
@@ -34,8 +35,6 @@ export default function ChatContainer({ category, onClose }: ChatContainerProps)
   const [isLoading, setIsLoading] = useState(false)
   const [usageCount, setUsageCount] = useState(0)
   const messagesEndRef = useRef<HTMLDivElement>(null)
-
-  const maxFreeUsage = 3
 
   useEffect(() => {
     // Add sophisticated welcome message with educational context
@@ -118,7 +117,7 @@ export default function ChatContainer({ category, onClose }: ChatContainerProps)
   const handleSendMessage = async (content: string) => {
     if (!content.trim() || isLoading) return
 
-    if (usageCount >= maxFreeUsage) {
+    if (usageCount >= MAX_FREE_MESSAGES) {
       // Show upgrade prompt
       return
     }
@@ -147,9 +146,9 @@ export default function ChatContainer({ category, onClose }: ChatContainerProps)
     )
 
     try {
-      // Create AbortController for request timeout (30 seconds)
+      // Create AbortController for request timeout
       const abortController = new AbortController()
-      const timeoutId = setTimeout(() => abortController.abort(), 30000)
+      const timeoutId = setTimeout(() => abortController.abort(), API_TIMEOUT_MS)
 
       const response = await fetch('/api/chat/enhanced', {
         method: 'POST',
@@ -157,7 +156,7 @@ export default function ChatContainer({ category, onClose }: ChatContainerProps)
         body: JSON.stringify({
           message: content.trim(),
           category,
-          history: messages.slice(-6), // Last 6 messages for context
+          history: messages.slice(-CONVERSATION_CONTEXT_LIMIT_ENHANCED), // Last N messages for context
           usage_count: usageCount
         }),
         signal: abortController.signal
@@ -209,7 +208,7 @@ export default function ChatContainer({ category, onClose }: ChatContainerProps)
         <ChatHeader 
           category={category} 
           usageCount={usageCount}
-          maxUsage={maxFreeUsage}
+          maxUsage={MAX_FREE_MESSAGES}
           onClose={onClose}
         />
         
@@ -223,9 +222,9 @@ export default function ChatContainer({ category, onClose }: ChatContainerProps)
         
         <InputArea
           onSendMessage={handleSendMessage}
-          disabled={isLoading || usageCount >= maxFreeUsage}
+          disabled={isLoading || usageCount >= MAX_FREE_MESSAGES}
           usageCount={usageCount}
-          maxUsage={maxFreeUsage}
+          maxUsage={MAX_FREE_MESSAGES}
         />
       </div>
     </div>

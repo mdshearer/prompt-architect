@@ -2,6 +2,13 @@ import { NextRequest, NextResponse } from 'next/server'
 import { together } from '@/lib/together'
 import { getClientIP, checkRateLimit, incrementRateLimit } from '@/lib/rate-limiter'
 import { validateMessage, validateHistory } from '@/lib/input-validation'
+import { logger } from '@/lib/logger'
+import {
+  CONVERSATION_CONTEXT_LIMIT_STANDARD,
+  AI_MAX_TOKENS_STANDARD,
+  AI_TEMPERATURE_STANDARD,
+  AI_TOP_P_STANDARD
+} from '@/lib/constants'
 
 interface Message {
   id: string
@@ -95,7 +102,7 @@ export async function POST(request: NextRequest) {
     const sanitizedMessage = messageValidation.sanitizedMessage!
 
     // Build conversation context
-    const conversationHistory = history.slice(-6) // Keep last 6 messages for context
+    const conversationHistory = history.slice(-CONVERSATION_CONTEXT_LIMIT_STANDARD) // Keep last N messages for context
     const messages = [
       { role: 'system' as const, content: SYSTEM_PROMPTS[category] },
       ...conversationHistory.map(msg => ({
@@ -108,9 +115,9 @@ export async function POST(request: NextRequest) {
     const completion = await together.chat.completions.create({
       model: 'meta-llama/Llama-3.3-70B-Instruct-Turbo',
       messages,
-      max_tokens: 500,
-      temperature: 0.7,
-      top_p: 0.9,
+      max_tokens: AI_MAX_TOKENS_STANDARD,
+      temperature: AI_TEMPERATURE_STANDARD,
+      top_p: AI_TOP_P_STANDARD,
     })
 
     const response = completion.choices[0]?.message?.content
@@ -128,7 +135,7 @@ export async function POST(request: NextRequest) {
     })
 
   } catch (error) {
-    console.error('Chat API error:', error)
+    logger.error('Chat API error', error)
     return NextResponse.json({
       success: false,
       error: error instanceof Error ? error.message : 'Unknown error'

@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import ChatContainer from '@/components/chat/ChatContainer'
+import ChatContainer from '@/components/chat/chat-container'
 
 type PromptCategory = 'custom_instructions' | 'projects_gems' | 'threads'
 
