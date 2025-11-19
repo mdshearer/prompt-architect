@@ -57,8 +57,11 @@ export default function ChatInterface({ category, onClose }: ChatInterfaceProps)
       return
     }
 
+    // Increment counter optimistically to prevent race condition on rapid clicks
+    setUsageCount(prev => prev + 1)
+
     const userMessage: Message = {
-      id: Date.now().toString(),
+      id: crypto.randomUUID(),
       content: input.trim(),
       role: 'user',
       timestamp: new Date()
@@ -69,6 +72,10 @@ export default function ChatInterface({ category, onClose }: ChatInterfaceProps)
     setIsLoading(true)
 
     try {
+      // Create AbortController for request timeout (30 seconds)
+      const abortController = new AbortController()
+      const timeoutId = setTimeout(() => abortController.abort(), 30000)
+
       const response = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -76,27 +83,38 @@ export default function ChatInterface({ category, onClose }: ChatInterfaceProps)
           message: input.trim(),
           category,
           history: messages
-        })
+        }),
+        signal: abortController.signal
       })
+
+      clearTimeout(timeoutId)
 
       const data = await response.json()
 
       if (data.success) {
         const assistantMessage: Message = {
-          id: (Date.now() + 1).toString(),
+          id: crypto.randomUUID(),
           content: data.response,
           role: 'assistant',
           timestamp: new Date()
         }
         setMessages(prev => [...prev, assistantMessage])
-        setUsageCount(prev => prev + 1)
       } else {
         throw new Error(data.error || 'Failed to get response')
       }
     } catch (error) {
+      // Decrement counter since API call failed
+      setUsageCount(prev => prev - 1)
+
+      // Provide specific error message for timeouts
+      let errorContent = 'Sorry, I encountered an error. Please try again.'
+      if (error instanceof Error && error.name === 'AbortError') {
+        errorContent = 'The request timed out. Please check your connection and try again.'
+      }
+
       const errorMessage: Message = {
-        id: (Date.now() + 1).toString(),
-        content: 'Sorry, I encountered an error. Please try again.',
+        id: crypto.randomUUID(),
+        content: errorContent,
         role: 'assistant',
         timestamp: new Date()
       }

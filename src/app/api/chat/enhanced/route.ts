@@ -1,5 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { together } from '@/lib/together'
+import { getClientIP, checkRateLimit, incrementRateLimit } from '@/lib/rate-limiter'
+import { validateMessage, validateHistory } from '@/lib/input-validation'
+
+interface UIElements {
+  show_examples?: boolean
+  platform_selector?: string[]
+  next_action?: 'optimi_builder' | 'custom_instructions_builder' | 'project_builder'
+  educational_content?: {
+    concept: string
+    level: 'beginner' | 'intermediate' | 'advanced'
+  }
+}
 
 interface Message {
   id: string
@@ -7,7 +19,7 @@ interface Message {
   role: 'user' | 'assistant'
   timestamp: Date
   status?: 'sending' | 'sent' | 'error'
-  ui_elements?: any
+  ui_elements?: UIElements
 }
 
 interface EnhancedChatRequest {
@@ -110,7 +122,46 @@ const CONVERSATION_STARTERS = {
 
 export async function POST(request: NextRequest) {
   try {
+    // Check rate limit before processing request
+    const clientIP = getClientIP(request)
+    const rateLimit = checkRateLimit(clientIP)
+
+    if (!rateLimit.allowed) {
+      return NextResponse.json({
+        success: false,
+        error: 'Rate limit exceeded',
+        message: `You've used your ${rateLimit.limit} free messages. Please sign up to continue.`,
+        rateLimitInfo: {
+          currentCount: rateLimit.currentCount,
+          limit: rateLimit.limit,
+          resetsAt: rateLimit.resetsAt
+        }
+      }, { status: 429 })
+    }
+
     const { message, category, history, usage_count }: EnhancedChatRequest = await request.json()
+
+    // Validate input before processing
+    const messageValidation = validateMessage(message)
+    if (!messageValidation.isValid) {
+      return NextResponse.json({
+        success: false,
+        error: messageValidation.error,
+        errorCode: messageValidation.errorCode
+      }, { status: 400 })
+    }
+
+    // Validate conversation history
+    const historyValidation = validateHistory(history)
+    if (!historyValidation.isValid) {
+      return NextResponse.json({
+        success: false,
+        error: historyValidation.error
+      }, { status: 400 })
+    }
+
+    // Use sanitized message for API call
+    const sanitizedMessage = messageValidation.sanitizedMessage!
 
     // Determine conversation stage and appropriate response strategy
     const conversationHistory = history.slice(-8)
@@ -125,7 +176,7 @@ export async function POST(request: NextRequest) {
         role: msg.role as 'user' | 'assistant',
         content: msg.content
       })),
-      { role: 'user' as const, content: message }
+      { role: 'user' as const, content: sanitizedMessage }
     ]
 
     const completion = await together.chat.completions.create({
@@ -143,7 +194,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Enhance response with contextual UI elements
-    const ui_elements: any = {}
+    const ui_elements: UIElements = {}
 
     // Add educational content markers
     if (isEarlyConversation) {
@@ -173,6 +224,9 @@ export async function POST(request: NextRequest) {
         ui_elements.next_action = 'project_builder'
       }
     }
+
+    // Increment rate limit counter after successful request
+    incrementRateLimit(clientIP)
 
     return NextResponse.json({
       success: true,

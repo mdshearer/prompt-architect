@@ -5,21 +5,23 @@ import MessageList from './MessageList'
 import InputArea from './InputArea'
 import ChatHeader from './ChatHeader'
 
+interface UIElements {
+  show_examples?: boolean
+  platform_selector?: string[]
+  next_action?: 'optimi_builder' | 'custom_instructions_builder' | 'project_builder'
+  educational_content?: {
+    concept: string
+    level: 'beginner' | 'intermediate' | 'advanced'
+  }
+}
+
 interface Message {
   id: string
   content: string
   role: 'user' | 'assistant'
   timestamp: Date
   status?: 'sending' | 'sent' | 'error'
-  ui_elements?: {
-    show_examples?: boolean
-    platform_selector?: string[]
-    next_action?: string
-    educational_content?: {
-      concept: string
-      level: 'beginner' | 'intermediate' | 'advanced'
-    }
-  }
+  ui_elements?: UIElements
 }
 
 interface ChatContainerProps {
@@ -94,7 +96,7 @@ export default function ChatContainer({ category, onClose }: ChatContainerProps)
   const handlePromptGenerated = (prompt: string) => {
     // Add the generated prompt as a user message
     const promptMessage: Message = {
-      id: Date.now().toString(),
+      id: crypto.randomUUID(),
       content: `Here's my generated prompt:\n\n${prompt}`,
       role: 'user',
       timestamp: new Date(),
@@ -104,7 +106,7 @@ export default function ChatContainer({ category, onClose }: ChatContainerProps)
 
     // Add a congratulatory AI response
     const responseMessage: Message = {
-      id: (Date.now() + 1).toString(),
+      id: crypto.randomUUID(),
       content: "**Prompt Generated Successfully**\n\nYour professional prompt has been created and is ready for use. Next steps:\n\n- **Copy and implement** this prompt in your preferred AI platform\n- **Test the results** and evaluate performance\n- **Refine as needed** based on your specific requirements\n- **Document** for future reference\n\nWould you like to create another prompt or optimize this implementation?",
       role: 'assistant',
       timestamp: new Date(),
@@ -121,8 +123,11 @@ export default function ChatContainer({ category, onClose }: ChatContainerProps)
       return
     }
 
+    // Increment counter optimistically to prevent race condition on rapid clicks
+    setUsageCount(prev => prev + 1)
+
     const userMessage: Message = {
-      id: Date.now().toString(),
+      id: crypto.randomUUID(),
       content: content.trim(),
       role: 'user',
       timestamp: new Date(),
@@ -133,15 +138,19 @@ export default function ChatContainer({ category, onClose }: ChatContainerProps)
     setIsLoading(true)
 
     // Update message status to sent
-    setMessages(prev => 
-      prev.map(msg => 
-        msg.id === userMessage.id 
+    setMessages(prev =>
+      prev.map(msg =>
+        msg.id === userMessage.id
           ? { ...msg, status: 'sent' as const }
           : msg
       )
     )
 
     try {
+      // Create AbortController for request timeout (30 seconds)
+      const abortController = new AbortController()
+      const timeoutId = setTimeout(() => abortController.abort(), 30000)
+
       const response = await fetch('/api/chat/enhanced', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -150,14 +159,17 @@ export default function ChatContainer({ category, onClose }: ChatContainerProps)
           category,
           history: messages.slice(-6), // Last 6 messages for context
           usage_count: usageCount
-        })
+        }),
+        signal: abortController.signal
       })
+
+      clearTimeout(timeoutId)
 
       const data = await response.json()
 
       if (data.success) {
         const assistantMessage: Message = {
-          id: (Date.now() + 1).toString(),
+          id: crypto.randomUUID(),
           content: data.message,
           role: 'assistant',
           timestamp: new Date(),
@@ -165,14 +177,22 @@ export default function ChatContainer({ category, onClose }: ChatContainerProps)
           ui_elements: data.ui_elements
         }
         setMessages(prev => [...prev, assistantMessage])
-        setUsageCount(prev => prev + 1)
       } else {
         throw new Error(data.error || 'Failed to get response')
       }
     } catch (error) {
+      // Decrement counter since API call failed
+      setUsageCount(prev => prev - 1)
+
+      // Provide specific error message for timeouts
+      let errorContent = 'A technical error occurred while processing your request. Please try again, and I will assist you in developing your prompt.'
+      if (error instanceof Error && error.name === 'AbortError') {
+        errorContent = 'The request timed out. Please check your connection and try again.'
+      }
+
       const errorMessage: Message = {
-        id: (Date.now() + 1).toString(),
-        content: 'A technical error occurred while processing your request. Please try again, and I will assist you in developing your prompt.',
+        id: crypto.randomUUID(),
+        content: errorContent,
         role: 'assistant',
         timestamp: new Date(),
         status: 'error'
