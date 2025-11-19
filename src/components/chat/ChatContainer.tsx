@@ -147,6 +147,10 @@ export default function ChatContainer({ category, onClose }: ChatContainerProps)
     )
 
     try {
+      // Create AbortController for request timeout (30 seconds)
+      const abortController = new AbortController()
+      const timeoutId = setTimeout(() => abortController.abort(), 30000)
+
       const response = await fetch('/api/chat/enhanced', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -155,8 +159,11 @@ export default function ChatContainer({ category, onClose }: ChatContainerProps)
           category,
           history: messages.slice(-6), // Last 6 messages for context
           usage_count: usageCount
-        })
+        }),
+        signal: abortController.signal
       })
+
+      clearTimeout(timeoutId)
 
       const data = await response.json()
 
@@ -177,9 +184,15 @@ export default function ChatContainer({ category, onClose }: ChatContainerProps)
       // Decrement counter since API call failed
       setUsageCount(prev => prev - 1)
 
+      // Provide specific error message for timeouts
+      let errorContent = 'A technical error occurred while processing your request. Please try again, and I will assist you in developing your prompt.'
+      if (error instanceof Error && error.name === 'AbortError') {
+        errorContent = 'The request timed out. Please check your connection and try again.'
+      }
+
       const errorMessage: Message = {
         id: crypto.randomUUID(),
-        content: 'A technical error occurred while processing your request. Please try again, and I will assist you in developing your prompt.',
+        content: errorContent,
         role: 'assistant',
         timestamp: new Date(),
         status: 'error'

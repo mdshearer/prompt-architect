@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { together } from '@/lib/together'
+import { getClientIP, checkRateLimit, incrementRateLimit } from '@/lib/rate-limiter'
+import { validateMessage, validateHistory } from '@/lib/input-validation'
 
 interface Message {
   id: string
@@ -51,7 +53,46 @@ Help users structure their conversations for maximum clarity and effectiveness.`
 
 export async function POST(request: NextRequest) {
   try {
+    // Check rate limit before processing request
+    const clientIP = getClientIP(request)
+    const rateLimit = checkRateLimit(clientIP)
+
+    if (!rateLimit.allowed) {
+      return NextResponse.json({
+        success: false,
+        error: 'Rate limit exceeded',
+        message: `You've used your ${rateLimit.limit} free messages. Please sign up to continue.`,
+        rateLimitInfo: {
+          currentCount: rateLimit.currentCount,
+          limit: rateLimit.limit,
+          resetsAt: rateLimit.resetsAt
+        }
+      }, { status: 429 })
+    }
+
     const { message, category, history }: ChatRequest = await request.json()
+
+    // Validate input before processing
+    const messageValidation = validateMessage(message)
+    if (!messageValidation.isValid) {
+      return NextResponse.json({
+        success: false,
+        error: messageValidation.error,
+        errorCode: messageValidation.errorCode
+      }, { status: 400 })
+    }
+
+    // Validate conversation history
+    const historyValidation = validateHistory(history)
+    if (!historyValidation.isValid) {
+      return NextResponse.json({
+        success: false,
+        error: historyValidation.error
+      }, { status: 400 })
+    }
+
+    // Use sanitized message for API call
+    const sanitizedMessage = messageValidation.sanitizedMessage!
 
     // Build conversation context
     const conversationHistory = history.slice(-6) // Keep last 6 messages for context
@@ -61,7 +102,7 @@ export async function POST(request: NextRequest) {
         role: msg.role as 'user' | 'assistant',
         content: msg.content
       })),
-      { role: 'user' as const, content: message }
+      { role: 'user' as const, content: sanitizedMessage }
     ]
 
     const completion = await together.chat.completions.create({
@@ -77,6 +118,9 @@ export async function POST(request: NextRequest) {
     if (!response) {
       throw new Error('No response from AI')
     }
+
+    // Increment rate limit counter after successful request
+    incrementRateLimit(clientIP)
 
     return NextResponse.json({
       success: true,

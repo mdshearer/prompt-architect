@@ -72,6 +72,10 @@ export default function ChatInterface({ category, onClose }: ChatInterfaceProps)
     setIsLoading(true)
 
     try {
+      // Create AbortController for request timeout (30 seconds)
+      const abortController = new AbortController()
+      const timeoutId = setTimeout(() => abortController.abort(), 30000)
+
       const response = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -79,8 +83,11 @@ export default function ChatInterface({ category, onClose }: ChatInterfaceProps)
           message: input.trim(),
           category,
           history: messages
-        })
+        }),
+        signal: abortController.signal
       })
+
+      clearTimeout(timeoutId)
 
       const data = await response.json()
 
@@ -99,9 +106,15 @@ export default function ChatInterface({ category, onClose }: ChatInterfaceProps)
       // Decrement counter since API call failed
       setUsageCount(prev => prev - 1)
 
+      // Provide specific error message for timeouts
+      let errorContent = 'Sorry, I encountered an error. Please try again.'
+      if (error instanceof Error && error.name === 'AbortError') {
+        errorContent = 'The request timed out. Please check your connection and try again.'
+      }
+
       const errorMessage: Message = {
         id: crypto.randomUUID(),
-        content: 'Sorry, I encountered an error. Please try again.',
+        content: errorContent,
         role: 'assistant',
         timestamp: new Date()
       }
