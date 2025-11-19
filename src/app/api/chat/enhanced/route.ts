@@ -2,6 +2,13 @@ import { NextRequest, NextResponse } from 'next/server'
 import { together } from '@/lib/together'
 import { getClientIP, checkRateLimit, incrementRateLimit } from '@/lib/rate-limiter'
 import { validateMessage, validateHistory } from '@/lib/input-validation'
+import { logger } from '@/lib/logger'
+import {
+  CONVERSATION_CONTEXT_LIMIT_ENHANCED,
+  AI_MAX_TOKENS_ENHANCED,
+  AI_TEMPERATURE_ENHANCED,
+  AI_TOP_P_ENHANCED
+} from '@/lib/constants'
 
 interface UIElements {
   show_examples?: boolean
@@ -164,7 +171,7 @@ export async function POST(request: NextRequest) {
     const sanitizedMessage = messageValidation.sanitizedMessage!
 
     // Determine conversation stage and appropriate response strategy
-    const conversationHistory = history.slice(-8)
+    const conversationHistory = history.slice(-CONVERSATION_CONTEXT_LIMIT_ENHANCED)
     const isEarlyConversation = conversationHistory.length <= 2
     
     // Build enhanced context with educational guidance
@@ -182,9 +189,9 @@ export async function POST(request: NextRequest) {
     const completion = await together.chat.completions.create({
       model: 'meta-llama/Llama-3.3-70B-Instruct-Turbo',
       messages,
-      max_tokens: 600,
-      temperature: 0.8,
-      top_p: 0.9,
+      max_tokens: AI_MAX_TOKENS_ENHANCED,
+      temperature: AI_TEMPERATURE_ENHANCED,
+      top_p: AI_TOP_P_ENHANCED,
     })
 
     let response = completion.choices[0]?.message?.content?.trim()
@@ -236,7 +243,7 @@ export async function POST(request: NextRequest) {
     })
 
   } catch (error) {
-    console.error('Enhanced chat API error:', error)
+    logger.error('Enhanced chat API error', error)
     return NextResponse.json({
       success: false,
       error: error instanceof Error ? error.message : 'Unknown error',

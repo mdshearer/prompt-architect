@@ -2,7 +2,7 @@
 
 import { User, Bot, Copy, CheckCircle } from 'lucide-react'
 import { useState } from 'react'
-import PromptBuilderTrigger from './PromptBuilderTrigger'
+import PromptBuilderTrigger from './prompt-builder-trigger'
 
 interface Message {
   id: string

@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { Download } from 'lucide-react'
-import ExportManager from './ExportManager'
+import ExportManager from './export-manager'
 
 interface ExportButtonProps {
   content: string

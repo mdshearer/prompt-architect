@@ -1,5 +1,6 @@
 'use client'
 
+import { useMemo } from 'react'
 import { X, Sparkles } from 'lucide-react'
 
 interface ChatHeaderProps {
@@ -10,7 +11,8 @@ interface ChatHeaderProps {
 }
 
 export default function ChatHeader({ category, usageCount, maxUsage, onClose }: ChatHeaderProps) {
-  const getCategoryInfo = () => {
+  // Memoize category info to prevent recalculation on every render
+  const info = useMemo(() => {
     switch (category) {
       case 'custom_instructions':
         return {
@@ -21,7 +23,7 @@ export default function ChatHeader({ category, usageCount, maxUsage, onClose }: 
         }
       case 'projects_gems':
         return {
-          title: 'Projects & Gems Builder', 
+          title: 'Projects & Gems Builder',
           subtitle: 'Create specialized AI experts for your domain',
           color: 'optimi-green',
           bgColor: 'bg-optimi-green'
@@ -30,13 +32,11 @@ export default function ChatHeader({ category, usageCount, maxUsage, onClose }: 
         return {
           title: 'Thread Prompts Builder',
           subtitle: 'Utilize the OPTIMI framework for optimal results',
-          color: 'optimi-blue', 
+          color: 'optimi-blue',
           bgColor: 'bg-optimi-blue'
         }
     }
-  }
-
-  const info = getCategoryInfo()
+  }, [category])
 
   return (
     <div className={`${info.bgColor} text-white p-6 rounded-t-xl`}>

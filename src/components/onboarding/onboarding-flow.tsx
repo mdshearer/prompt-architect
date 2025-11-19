@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { ChevronLeft, ChevronRight, Check } from 'lucide-react'
-import StepIndicator from './StepIndicator'
+import StepIndicator from './step-indicator'
 
 interface OnboardingData {
   role: string
