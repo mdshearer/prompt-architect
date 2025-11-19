@@ -57,8 +57,11 @@ export default function ChatInterface({ category, onClose }: ChatInterfaceProps)
       return
     }
 
+    // Increment counter optimistically to prevent race condition on rapid clicks
+    setUsageCount(prev => prev + 1)
+
     const userMessage: Message = {
-      id: Date.now().toString(),
+      id: crypto.randomUUID(),
       content: input.trim(),
       role: 'user',
       timestamp: new Date()
@@ -83,19 +86,21 @@ export default function ChatInterface({ category, onClose }: ChatInterfaceProps)
 
       if (data.success) {
         const assistantMessage: Message = {
-          id: (Date.now() + 1).toString(),
+          id: crypto.randomUUID(),
           content: data.response,
           role: 'assistant',
           timestamp: new Date()
         }
         setMessages(prev => [...prev, assistantMessage])
-        setUsageCount(prev => prev + 1)
       } else {
         throw new Error(data.error || 'Failed to get response')
       }
     } catch (error) {
+      // Decrement counter since API call failed
+      setUsageCount(prev => prev - 1)
+
       const errorMessage: Message = {
-        id: (Date.now() + 1).toString(),
+        id: crypto.randomUUID(),
         content: 'Sorry, I encountered an error. Please try again.',
         role: 'assistant',
         timestamp: new Date()

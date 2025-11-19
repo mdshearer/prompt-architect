@@ -1,13 +1,23 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { together } from '@/lib/together'
 
+interface UIElements {
+  show_examples?: boolean
+  platform_selector?: string[]
+  next_action?: 'optimi_builder' | 'custom_instructions_builder' | 'project_builder'
+  educational_content?: {
+    concept: string
+    level: 'beginner' | 'intermediate' | 'advanced'
+  }
+}
+
 interface Message {
   id: string
   content: string
   role: 'user' | 'assistant'
   timestamp: Date
   status?: 'sending' | 'sent' | 'error'
-  ui_elements?: any
+  ui_elements?: UIElements
 }
 
 interface EnhancedChatRequest {
@@ -143,7 +153,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Enhance response with contextual UI elements
-    const ui_elements: any = {}
+    const ui_elements: UIElements = {}
 
     // Add educational content markers
     if (isEarlyConversation) {
