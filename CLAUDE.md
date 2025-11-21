@@ -88,7 +88,8 @@ src/
 │   ├── api/                  # API routes
 │   │   ├── chat/             # Chat endpoints
 │   │   │   ├── route.ts      # Standard chat API
-│   │   │   └── enhanced/     # Enhanced chat with UI elements
+│   │   │   ├── enhanced/     # Enhanced chat with UI elements
+│   │   │   └── intake/       # Onboarding intake flow API
 │   │   └── test/             # Test endpoint
 │   ├── dashboard/            # Dashboard page (future)
 │   ├── layout.tsx            # Root layout
@@ -112,14 +113,31 @@ src/
 │   ├── dashboard/            # Dashboard components (future)
 │   ├── export/               # Export functionality
 │   ├── library/              # Prompt library (future)
-│   └── onboarding/           # Onboarding flow (future)
+│   └── onboarding/           # Onboarding intake flow components
+│       ├── intake-context.tsx           # React Context for state
+│       ├── intake-flow.tsx              # Main container
+│       ├── intake-progress-indicator.tsx # Step progress UI
+│       ├── ai-tool-selector.tsx         # Step 1: AI tool selection
+│       ├── prompt-type-selector.tsx     # Step 2: Prompt type selection
+│       ├── initial-thoughts-input.tsx   # Step 3: User input
+│       ├── output-display.tsx           # Generated output display
+│       └── example-output-modal.tsx     # Example preview modal
 │
-└── lib/                      # Utility functions & libraries
-    ├── constants.ts          # App-wide constants (NEW - Phase 3)
-    ├── logger.ts             # Environment-aware logging (NEW - Phase 3)
-    ├── together.ts           # Together.ai client
-    ├── rate-limiter.ts       # Server-side rate limiting
-    └── input-validation.ts   # Input sanitization & validation
+├── lib/                      # Utility functions & libraries
+│   ├── constants.ts          # App-wide constants
+│   ├── logger.ts             # Environment-aware logging
+│   ├── together.ts           # Together.ai client
+│   ├── rate-limiter.ts       # Server-side rate limiting
+│   ├── input-validation.ts   # Input sanitization & validation
+│   ├── cookie-manager.ts     # Intake session persistence
+│   ├── intake-instructions.ts # AI instructions loader
+│   ├── intake-helpers.ts     # Intake flow utilities
+│   ├── output-formatter.ts   # Output formatting for display
+│   ├── example-outputs.ts    # Example output content
+│   └── setup-templates.ts    # AI tool setup templates
+│
+└── types/                    # TypeScript type definitions
+    └── intake.ts             # Intake flow types and constants
 ```
 
 **Important Notes:**
@@ -164,6 +182,94 @@ Open http://localhost:3001 in browser.
 - Send 3 messages (free tier limit)
 - Verify upgrade prompt appears
 - Test rate limiting by attempting 4th message
+
+## Onboarding Intake Flow
+
+The onboarding intake flow is the first user experience that guides users through creating their first AI prompt. It's a 3-step process that collects user preferences and generates customized output.
+
+### Flow Overview
+
+```
+Step 1: AI Tool Selection     →  Step 2: Prompt Type Selection  →  Step 3: Initial Thoughts
+   (ChatGPT, Claude,                (Prompt Architect,                (20-500 characters)
+    Gemini, Copilot)                 Custom Instructions,
+                                     Projects, Gems,                  ↓
+                                     General Prompt)              API Call to Together.ai
+                                                                      ↓
+                                                               Output Display
+                                                           (Setup Instructions +
+                                                            Generated Prompt)
+```
+
+### Key Features
+
+- **Dynamic prompt type filtering**: Available options depend on selected AI tool
+- **Prompt Architect is recommended** for ChatGPT, Claude, and Gemini
+- **Session persistence**: Uses localStorage with cookie backup
+- **Rate limiter exempt**: Intake doesn't count toward free message limit
+- **Input validation**: 20-500 characters with client and server validation
+
+### API Endpoint
+
+```
+POST /api/chat/intake
+
+Request Body:
+{
+  "aiTool": "chatgpt" | "claude" | "gemini" | "copilot",
+  "promptType": "prompt-architect" | "custom-instructions" | "projects" | "gems" | "general-prompt",
+  "userThoughts": string (20-500 chars)
+}
+
+Response:
+{
+  "success": true,
+  "output": {
+    "section1": string | undefined,  // Setup instructions (Prompt Architect only)
+    "section2": string,              // Generated prompt
+    "promptType": string
+  }
+}
+```
+
+### Cookie/Session Management
+
+The intake flow uses a dual-storage strategy for persistence:
+
+```typescript
+// src/lib/cookie-manager.ts
+import { getCookie, setCookie, clearCookie, createIntakeSession } from '@/lib/cookie-manager'
+
+// Create new session
+const session = createIntakeSession()
+
+// Get existing session
+const cookie = getCookie()  // Returns IntakeCookie | null
+
+// Update session
+setCookie({ ...cookie, intakeCompleted: true })
+
+// Clear session
+clearCookie()
+```
+
+### React Context Usage
+
+```typescript
+import { IntakeProvider, useIntake } from '@/components/onboarding/intake-context'
+
+// Wrap in provider
+<IntakeProvider>
+  <IntakeFlow />
+</IntakeProvider>
+
+// Use hook
+const {
+  step, aiTool, promptType, userThoughts,
+  setAiTool, setPromptType, setUserThoughts,
+  submitIntake, resetIntake, output, isLoading, error
+} = useIntake()
+```
 
 ## Commands
 
@@ -429,6 +535,18 @@ if (!rateLimit.allowed) {
 
 ## Recent Changes Log
 
+### Onboarding Intake Flow (November 21, 2025)
+- ✅ Implemented 3-step onboarding intake flow
+- ✅ Created intake API endpoint (`/api/chat/intake`)
+- ✅ Added 8 new onboarding components in `src/components/onboarding/`
+- ✅ Created React Context for intake state management
+- ✅ Implemented cookie-based session persistence
+- ✅ Added rate limiter exemption for intake flow
+- ✅ Created AI instructions JSON with 10+ instruction sets
+- ✅ Added dynamic prompt type filtering by AI tool
+- ✅ Fixed race condition in returning user flow
+- ✅ Added input validation (20-500 characters)
+
 ### Phase 3 & 4 (November 19, 2025)
 - ✅ Removed deprecated `ChatInterface.tsx` component
 - ✅ Renamed all components to kebab-case per CONSTITUTION.md
@@ -450,6 +568,6 @@ if (!rateLimit.allowed) {
 
 ---
 
-**Last Updated:** November 19, 2025
-**Version:** 1.0.0 (Phase 3 & 4 Complete)
+**Last Updated:** November 21, 2025
+**Version:** 1.1.0 (Onboarding Intake Flow Complete)
 **CONSTITUTION Compliance:** ✅ 100%
