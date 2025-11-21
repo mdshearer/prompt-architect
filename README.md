@@ -20,6 +20,14 @@ Prompt Architect transforms how regular folks create AI prompts. Instead of requ
 - ✅ Character count for longer messages (2000 char limit)
 - ✅ Copy-to-clipboard functionality for all prompts
 
+### **Onboarding Intake Flow** *(NEW)*
+- ✅ 3-step guided onboarding for new users
+- ✅ AI tool selection (ChatGPT, Claude, Gemini, Copilot)
+- ✅ Dynamic prompt type filtering by selected tool
+- ✅ Personalized output with setup instructions
+- ✅ Session persistence with cookie backup
+- ✅ Rate limiter exempt (intake is free)
+
 ### **Educational Framework**
 - ✅ **Custom Instructions**: Build persistent AI behavior for ChatGPT & Claude
 - ✅ **Projects & Gems**: Create specialized AI experts with domain knowledge
@@ -124,11 +132,12 @@ prompt-architect/
 │   │   ├── api/                  # API routes
 │   │   │   ├── chat/             # Chat endpoints
 │   │   │   │   ├── route.ts      # Standard chat
-│   │   │   │   └── enhanced/     # Enhanced chat with UI elements
+│   │   │   │   ├── enhanced/     # Enhanced chat with UI elements
+│   │   │   │   └── intake/       # Onboarding intake API (NEW)
 │   │   │   └── test/             # Test endpoint
 │   │   ├── dashboard/            # Dashboard page (future)
 │   │   ├── layout.tsx            # Root layout
-│   │   └── page.tsx              # Homepage
+│   │   └── page.tsx              # Homepage with intake flow
 │   │
 │   ├── components/               # React components (kebab-case filenames)
 │   │   ├── chat/                 # Chat interface components
@@ -145,17 +154,37 @@ prompt-architect/
 │   │   │   ├── custom-instructions-builder.tsx
 │   │   │   └── projects-gems-builder.tsx
 │   │   │
+│   │   ├── onboarding/           # Onboarding intake flow (NEW)
+│   │   │   ├── intake-context.tsx
+│   │   │   ├── intake-flow.tsx
+│   │   │   ├── ai-tool-selector.tsx
+│   │   │   ├── prompt-type-selector.tsx
+│   │   │   ├── initial-thoughts-input.tsx
+│   │   │   ├── output-display.tsx
+│   │   │   └── example-output-modal.tsx
+│   │   │
+│   │   ├── ui/                   # Shared UI components (NEW)
+│   │   │   └── check-icon.tsx
+│   │   │
 │   │   ├── dashboard/            # Dashboard components (future)
 │   │   ├── export/               # Export functionality
-│   │   ├── library/              # Prompt library (future)
-│   │   └── onboarding/           # Onboarding flow (future)
+│   │   └── library/              # Prompt library (future)
 │   │
-│   └── lib/                      # Utility libraries
-│       ├── constants.ts          # App-wide constants (NEW)
-│       ├── logger.ts             # Environment-aware logging (NEW)
-│       ├── together.ts           # Together.ai client
-│       ├── rate-limiter.ts       # Server-side rate limiting
-│       └── input-validation.ts   # Input sanitization & validation
+│   ├── lib/                      # Utility libraries
+│   │   ├── constants.ts          # App-wide constants
+│   │   ├── logger.ts             # Environment-aware logging
+│   │   ├── together.ts           # Together.ai client
+│   │   ├── rate-limiter.ts       # Server-side rate limiting
+│   │   ├── input-validation.ts   # Input sanitization & validation
+│   │   ├── cookie-manager.ts     # Intake session persistence (NEW)
+│   │   ├── intake-helpers.ts     # Intake flow utilities (NEW)
+│   │   ├── intake-instructions.ts # AI instructions loader (NEW)
+│   │   ├── output-formatter.ts   # Output formatting (NEW)
+│   │   ├── example-outputs.ts    # Example content (NEW)
+│   │   └── setup-templates.ts    # AI tool setup templates (NEW)
+│   │
+│   └── types/                    # TypeScript type definitions
+│       └── intake.ts             # Intake flow types (NEW)
 │
 ├── .claude/                      # AI-dev-orchestrator framework
 │   ├── personas/                 # Specialized AI personas
@@ -334,4 +363,4 @@ This project is proprietary software owned by Optimi. All rights reserved.
 
 **Built with ❤️ for Optimi's lead generation**
 
-**Last Updated:** November 19, 2025 | **Version:** 1.0.0 (Phase 3 & 4 Complete)
+**Last Updated:** November 21, 2025 | **Version:** 1.1.0 (Onboarding Intake Flow Complete)
