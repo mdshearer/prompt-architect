@@ -74,3 +74,36 @@ export type AiTool = typeof AI_TOOLS[keyof typeof AI_TOOLS]
  * Extracted from PROMPT_TYPES constant for type safety
  */
 export type PromptType = typeof PROMPT_TYPES[keyof typeof PROMPT_TYPES]
+
+// =============================================================================
+// API Request/Response Types
+// =============================================================================
+
+/**
+ * Request body for the intake API endpoint
+ * POST /api/chat/intake
+ */
+export interface IntakeAPIRequest {
+  aiTool: AiTool
+  promptType: PromptType
+  userThoughts: string // 20-500 characters
+}
+
+/**
+ * Formatted output structure returned by the intake flow
+ * Section 1 is only present for Prompt Architect type
+ */
+export interface FormattedOutput {
+  section1?: string  // Setup instructions (only for Prompt Architect)
+  section2: string   // Ready-to-use text (always present)
+  promptType: string
+}
+
+/**
+ * Response body from the intake API endpoint
+ */
+export interface IntakeAPIResponse {
+  success: boolean
+  output?: FormattedOutput
+  error?: string
+}
