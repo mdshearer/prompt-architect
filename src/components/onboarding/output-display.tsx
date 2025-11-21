@@ -18,6 +18,7 @@
 import { useState, useCallback } from 'react'
 import { useIntake } from './intake-context'
 import { getPromptTypeLabel } from '@/lib/intake-helpers'
+import { logger } from '@/lib/logger'
 import {
   Copy,
   Check,
@@ -56,7 +57,7 @@ export default function OutputDisplay() {
       setCopiedSection(section)
       setTimeout(() => setCopiedSection(null), 2000)
     } catch (err) {
-      console.error('Failed to copy:', err)
+      logger.error('Failed to copy to clipboard', err)
     }
   }, [output])
 
