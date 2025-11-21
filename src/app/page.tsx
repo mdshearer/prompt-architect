@@ -55,8 +55,8 @@ function HomeContent() {
     }
   }
 
-  // If showing chat after intake completion
-  if (showChat && intakeCompleted) {
+  // If showing chat (returning user continuing or after intake completion)
+  if (showChat) {
     return (
       <ChatContainer
         category={getChatCategory()}
@@ -96,8 +96,8 @@ function HomeContent() {
     )
   }
 
-  // If returning user with existing session, show continue option
-  if (existingSession && !intakeCompleted) {
+  // If returning user with existing completed session (output not stored, so go to chat)
+  if (existingSession) {
     return (
       <main className="min-h-screen bg-gray-50">
         <div className="container mx-auto px-4 py-8">
@@ -125,11 +125,14 @@ function HomeContent() {
 
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <button
-                  onClick={() => setExistingSession(null)}
+                  onClick={() => {
+                    setExistingSession(null)
+                    setShowChat(true)
+                  }}
                   className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-optimi-primary text-white font-semibold hover:bg-optimi-primary/90 transition-colors"
                 >
                   <ArrowRight className="w-5 h-5" />
-                  Continue Session
+                  Continue to Chat
                 </button>
 
                 <button
