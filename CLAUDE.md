@@ -11,6 +11,59 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 **Target Audience:** Regular folks who don't know how to prompt AI yet - marketers, small business owners, professionals seeking better AI results.
 
+## Quick Commands
+
+Use these trigger words to quickly activate specialized roles and tasks without typing full prompts.
+
+### Role Commands
+| Command | Role | What It Does |
+|---------|------|--------------|
+| `@dev` | Senior Developer | Implement features, fix bugs, write production-ready code |
+| `@qa` | QA Engineer | Review code for bugs, edge cases, performance, security |
+| `@docs` | Technical Writer | Update documentation (README, CLAUDE.md, code comments) |
+| `@architect` | Solution Architect | Design systems, create tech specs, plan architecture |
+| `@product` | Product Owner | Create PRDs, define requirements, prioritize features |
+
+### Task Commands
+| Command | Task | What It Does |
+|---------|------|--------------|
+| `@review` | Code Review | 5-dimension analysis: quality, bugs, performance, readability, security |
+| `@fix` | Fix Issues | Implement fixes for identified issues |
+| `@test` | Run Tests | Execute `npm run type-check && npm run lint && npm run build` |
+| `@commit` | Git Commit | Stage, commit with descriptive message, push to branch |
+| `@status` | Project Status | Show current git status, branch, recent commits |
+
+### Combo Commands
+| Command | What It Does |
+|---------|--------------|
+| `@qa @review` | QA Engineer performs full code review |
+| `@dev @fix` | Developer implements fixes |
+| `@docs @update` | Technical Writer updates all relevant docs |
+| `@test @commit` | Run tests, then commit if passing |
+
+### Usage Examples
+```
+User: @qa
+Claude: [Activates QA Engineer role] Ready to review. What would you like me to examine?
+
+User: @dev @fix the timer memory leaks
+Claude: [Activates Developer role] I'll implement fixes for the timer memory leaks...
+
+User: @review
+Claude: [Performs 5-dimension code review on recent changes]
+
+User: @test @commit
+Claude: [Runs tests, if passing commits and pushes changes]
+```
+
+### Notes
+- Commands are case-insensitive (`@QA` = `@qa`)
+- Multiple commands can be combined in one message
+- Add context after the command for specific tasks
+- Commands work best at the start of your message
+
+---
+
 ## Core Features
 
 - **Free tier**: 3 free chat messages per category with AI-powered prompt coaching
