@@ -9,32 +9,7 @@ import {
   AI_TEMPERATURE_ENHANCED,
   AI_TOP_P_ENHANCED
 } from '@/lib/constants'
-
-interface UIElements {
-  show_examples?: boolean
-  platform_selector?: string[]
-  next_action?: 'optimi_builder' | 'custom_instructions_builder' | 'project_builder'
-  educational_content?: {
-    concept: string
-    level: 'beginner' | 'intermediate' | 'advanced'
-  }
-}
-
-interface Message {
-  id: string
-  content: string
-  role: 'user' | 'assistant'
-  timestamp: Date
-  status?: 'sending' | 'sent' | 'error'
-  ui_elements?: UIElements
-}
-
-interface EnhancedChatRequest {
-  message: string
-  category: 'custom_instructions' | 'projects_gems' | 'threads'
-  history: Message[]
-  usage_count: number
-}
+import type { IUIElements, IEnhancedChatRequest, PromptCategory } from '@/types/chat'
 
 const ENHANCED_SYSTEM_PROMPTS = {
   custom_instructions: `You are an expert prompt engineering coach specializing in Custom Instructions for ChatGPT and Claude. Your role is to guide users through building powerful, persistent behavioral guidelines.
@@ -109,24 +84,6 @@ EDUCATIONAL FRAMEWORK:
 Focus on creating immediately actionable prompts they can copy and use right away. Emphasize the universal nature - works on ChatGPT, Claude, Gemini, Copilot, etc.`
 }
 
-const CONVERSATION_STARTERS = {
-  custom_instructions: {
-    role_discovery: "Tell me about your role and the kind of AI assistance you need most often. Are you a manager making decisions, a creator producing content, an analyst working with data, or something else?",
-    frustration_discovery: "What frustrates you most about your current AI interactions? Do you find yourself repeating the same context over and over?",
-    outcome_focus: "What would 'perfect' AI assistance look like for your daily work? What would change if AI truly understood how you work?"
-  },
-  projects_gems: {
-    expertise_discovery: "What specific area of expertise would be most valuable to have on-demand? Think of it like hiring a specialist consultant.",
-    domain_focus: "In your ideal scenario, what would this AI expert know deeply about your industry, role, or specific challenges?",
-    integration_discovery: "How do you envision using this specialized assistant in your regular workflow? Daily decisions, weekly analysis, project planning?"
-  },
-  threads: {
-    task_discovery: "What specific task or challenge brings you here? I'll help you create a prompt that gets exactly what you need, every time.",
-    context_gathering: "Tell me more about the context around this task. Who are you, what's the situation, and what constraints do you face?",
-    outcome_clarification: "How will you know when this prompt is working perfectly? What does success look like?"
-  }
-}
-
 export async function POST(request: NextRequest) {
   try {
     // Check rate limit before processing request
@@ -146,7 +103,8 @@ export async function POST(request: NextRequest) {
       }, { status: 429 })
     }
 
-    const { message, category, history, usage_count }: EnhancedChatRequest = await request.json()
+    // Note: usage_count is sent by client but rate limiting is handled server-side
+    const { message, category, history }: IEnhancedChatRequest = await request.json()
 
     // Validate input before processing
     const messageValidation = validateMessage(message)
@@ -168,7 +126,8 @@ export async function POST(request: NextRequest) {
     }
 
     // Use sanitized message for API call
-    const sanitizedMessage = messageValidation.sanitizedMessage!
+    // Safe to assert: sanitizedMessage is guaranteed to exist when isValid is true
+    const sanitizedMessage = messageValidation.sanitizedMessage as string
 
     // Determine conversation stage and appropriate response strategy
     const conversationHistory = history.slice(-CONVERSATION_CONTEXT_LIMIT_ENHANCED)
@@ -201,7 +160,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Enhance response with contextual UI elements
-    const ui_elements: UIElements = {}
+    const ui_elements: IUIElements = {}
 
     // Add educational content markers
     if (isEarlyConversation) {

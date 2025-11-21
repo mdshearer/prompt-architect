@@ -2,8 +2,9 @@
 
 import { useState, useEffect } from 'react'
 import { Search, Filter, Star, Calendar, Tag, Copy, ChevronDown } from 'lucide-react'
+import { logger } from '@/lib/logger'
 
-interface Prompt {
+interface IPrompt {
   id: string
   title: string
   content: string
@@ -15,20 +16,20 @@ interface Prompt {
   user_id?: string
 }
 
-interface PromptLibraryProps {
+interface IPromptLibraryProps {
   isOpen: boolean
   onClose: () => void
 }
 
-export default function PromptLibrary({ isOpen, onClose }: PromptLibraryProps) {
-  const [prompts, setPrompts] = useState<Prompt[]>([])
+export default function PromptLibrary({ isOpen, onClose }: IPromptLibraryProps) {
+  const [prompts, setPrompts] = useState<IPrompt[]>([])
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedFilter, setSelectedFilter] = useState<'all' | 'recent' | 'favorites' | 'custom_instructions' | 'projects_gems' | 'threads'>('all')
   const [isFilterOpen, setIsFilterOpen] = useState(false)
 
   // Mock data - replace with Supabase integration
   useEffect(() => {
-    const mockPrompts: Prompt[] = [
+    const mockPrompts: IPrompt[] = [
       {
         id: '1',
         title: 'Business Strategy Assistant',
@@ -91,7 +92,7 @@ export default function PromptLibrary({ isOpen, onClose }: PromptLibraryProps) {
       await navigator.clipboard.writeText(content)
       // Add toast notification here
     } catch (err) {
-      console.error('Failed to copy prompt: ', err)
+      logger.error('Failed to copy prompt', err)
     }
   }
 

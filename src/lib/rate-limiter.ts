@@ -7,17 +7,18 @@
  * CONSTITUTION compliance: No database needed for MVP, uses in-memory storage
  */
 
-interface RateLimitEntry {
+import { MAX_FREE_MESSAGES } from '@/lib/constants'
+
+interface IRateLimitEntry {
   count: number
   firstRequest: number // Timestamp of first request
   lastReset: number    // Timestamp of last counter reset
 }
 
 // In-memory store: IP -> usage data
-const rateLimitStore = new Map<string, RateLimitEntry>()
+const rateLimitStore = new Map<string, IRateLimitEntry>()
 
-// Configuration constants per CONSTITUTION standards
-const MAX_FREE_MESSAGES = 3
+// Time-based configuration constants
 const RATE_LIMIT_WINDOW_MS = 24 * 60 * 60 * 1000 // 24 hours
 const CLEANUP_INTERVAL_MS = 60 * 60 * 1000 // Clean up every 1 hour
 
@@ -29,7 +30,7 @@ function cleanupExpiredEntries(): void {
   const now = Date.now()
   const expiredKeys: string[] = []
 
-  for (const [key, entry] of rateLimitStore.entries()) {
+  for (const [key, entry] of Array.from(rateLimitStore.entries())) {
     if (now - entry.lastReset > RATE_LIMIT_WINDOW_MS) {
       expiredKeys.push(key)
     }

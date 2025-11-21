@@ -2,15 +2,16 @@
 
 import { useMemo } from 'react'
 import { X, Sparkles } from 'lucide-react'
+import type { PromptCategory } from '@/types/chat'
 
-interface ChatHeaderProps {
-  category: 'custom_instructions' | 'projects_gems' | 'threads'
+interface IChatHeaderProps {
+  category: PromptCategory
   usageCount: number
   maxUsage: number
   onClose: () => void
 }
 
-export default function ChatHeader({ category, usageCount, maxUsage, onClose }: ChatHeaderProps) {
+export default function ChatHeader({ category, usageCount, maxUsage, onClose }: IChatHeaderProps) {
   // Memoize category info to prevent recalculation on every render
   const info = useMemo(() => {
     switch (category) {

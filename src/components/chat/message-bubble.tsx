@@ -3,32 +3,39 @@
 import { User, Bot, Copy, CheckCircle } from 'lucide-react'
 import { useState } from 'react'
 import PromptBuilderTrigger from './prompt-builder-trigger'
+import { logger } from '@/lib/logger'
+import type { IMessage, IUIElements } from '@/types/chat'
 
-interface Message {
-  id: string
-  content: string
-  role: 'user' | 'assistant'
-  timestamp: Date
-  status?: 'sending' | 'sent' | 'error'
-  ui_elements?: {
-    show_examples?: boolean
-    platform_selector?: string[]
-    next_action?: string
-    educational_content?: {
-      concept: string
-      level: 'beginner' | 'intermediate' | 'advanced'
-    }
-  }
-}
-
-interface MessageBubbleProps {
-  message: Message
+interface IMessageBubbleProps {
+  message: IMessage
   category: 'custom_instructions' | 'projects_gems' | 'threads'
+  /** Reserved for future use - indicates if this is the most recent message */
   isLatest: boolean
   onPromptGenerated?: (prompt: string) => void
 }
 
-export default function MessageBubble({ message, category, isLatest, onPromptGenerated }: MessageBubbleProps) {
+/**
+ * Escapes HTML entities to prevent XSS attacks.
+ * Must be called BEFORE any markdown-to-HTML conversion.
+ *
+ * @param text - Raw text that may contain HTML
+ * @returns Escaped text safe for HTML rendering
+ */
+function escapeHtml(text: string): string {
+  const htmlEscapeMap: Record<string, string> = {
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#039;'
+  }
+  return text.replace(/[&<>"']/g, (char) => htmlEscapeMap[char])
+}
+
+export default function MessageBubble({ message, category, isLatest, onPromptGenerated }: IMessageBubbleProps) {
+  // isLatest is intentionally unused - reserved for future animation/scroll features
+  void isLatest
+
   const [copied, setCopied] = useState(false)
 
   const handleCopy = async () => {
@@ -37,32 +44,33 @@ export default function MessageBubble({ message, category, isLatest, onPromptGen
       setCopied(true)
       setTimeout(() => setCopied(false), 2000)
     } catch (err) {
-      console.error('Failed to copy text: ', err)
+      logger.error('Failed to copy text', err)
     }
   }
 
-  const getCategoryColor = () => {
-    switch (category) {
-      case 'custom_instructions': return 'optimi-primary'
-      case 'projects_gems': return 'optimi-green'
-      case 'threads': return 'optimi-blue'
-    }
-  }
-
+  /**
+   * Formats message content with safe markdown rendering.
+   * HTML is escaped first to prevent XSS, then markdown syntax is converted.
+   *
+   * @param content - Raw message content
+   * @returns Array of React elements with formatted content
+   */
   const formatContent = (content: string) => {
-    // Convert markdown-style formatting for display
-    return content
+    // SECURITY: Escape HTML entities FIRST to prevent XSS attacks
+    const escaped = escapeHtml(content)
+
+    // Then convert markdown-style formatting to safe HTML
+    const formatted = escaped
       .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
       .replace(/\*(.*?)\*/g, '<em>$1</em>')
-      .split('\n').map((line, i, arr) => (
-        <span key={i}>
-          <span dangerouslySetInnerHTML={{ __html: line }} />
-          {i < arr.length - 1 && <br />}
-        </span>
-      ))
-  }
 
-  const color = getCategoryColor()
+    return formatted.split('\n').map((line, i, arr) => (
+      <span key={i}>
+        <span dangerouslySetInnerHTML={{ __html: line }} />
+        {i < arr.length - 1 && <br />}
+      </span>
+    ))
+  }
 
   if (message.role === 'user') {
     return (

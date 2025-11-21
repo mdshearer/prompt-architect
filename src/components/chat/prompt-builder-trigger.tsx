@@ -5,13 +5,14 @@ import { Zap, Target, Brain, MessageSquare } from 'lucide-react'
 import OptimiBuilder from '../prompt-builders/optimi-builder'
 import CustomInstructionsBuilder from '../prompt-builders/custom-instructions-builder'
 import ProjectsGemsBuilder from '../prompt-builders/projects-gems-builder'
+import type { PromptCategory } from '@/types/chat'
 
-interface PromptBuilderTriggerProps {
-  category: 'custom_instructions' | 'projects_gems' | 'threads'
+interface IPromptBuilderTriggerProps {
+  category: PromptCategory
   onPromptGenerated: (prompt: string) => void
 }
 
-export default function PromptBuilderTrigger({ category, onPromptGenerated }: PromptBuilderTriggerProps) {
+export default function PromptBuilderTrigger({ category, onPromptGenerated }: IPromptBuilderTriggerProps) {
   const [activeBuilder, setActiveBuilder] = useState<string | null>(null)
 
   const handleBuilderComplete = (prompt: string) => {
