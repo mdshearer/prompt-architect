@@ -10,6 +10,11 @@
  * CONSTITUTION compliance: Security standards (lines 136-154)
  */
 
+import {
+  MAX_INTAKE_THOUGHTS_LENGTH,
+  MIN_INTAKE_THOUGHTS_LENGTH
+} from '@/lib/constants'
+
 // Configuration constants per CONSTITUTION standards
 const MAX_MESSAGE_LENGTH = 2000
 const MIN_MESSAGE_LENGTH = 1
@@ -201,5 +206,95 @@ export function getValidationLimits() {
   return {
     maxLength: MAX_MESSAGE_LENGTH,
     minLength: MIN_MESSAGE_LENGTH
+  }
+}
+
+// =============================================================================
+// Intake Flow Validation
+// =============================================================================
+
+/**
+ * Validation result specific to intake input
+ */
+export interface IntakeValidationResult {
+  valid: boolean
+  sanitizedInput?: string
+  error?: string
+  errorCode?: 'TOO_LONG' | 'TOO_SHORT' | 'EMPTY' | 'INVALID_CHARS'
+}
+
+/**
+ * Validate and sanitize user input for the intake flow
+ *
+ * Enforces the 20-500 character limit specific to the initial thoughts input.
+ * Also applies sanitization to prevent injection attacks.
+ *
+ * @param text - The user's initial thoughts input
+ * @returns Validation result with sanitized input or error
+ *
+ * @example
+ * const result = validateIntakeInput("I run a small bakery")
+ * if (result.valid) {
+ *   // Use result.sanitizedInput
+ * } else {
+ *   // Show result.error to user
+ * }
+ */
+export function validateIntakeInput(text: string): IntakeValidationResult {
+  // Check for empty/null
+  if (!text || typeof text !== 'string') {
+    return {
+      valid: false,
+      error: 'Please enter your thoughts',
+      errorCode: 'EMPTY'
+    }
+  }
+
+  // Trim whitespace for length validation
+  const trimmed = text.trim()
+
+  // Check minimum length
+  if (trimmed.length < MIN_INTAKE_THOUGHTS_LENGTH) {
+    return {
+      valid: false,
+      error: `Please enter at least ${MIN_INTAKE_THOUGHTS_LENGTH} characters (${trimmed.length}/${MIN_INTAKE_THOUGHTS_LENGTH})`,
+      errorCode: 'TOO_SHORT'
+    }
+  }
+
+  // Check maximum length
+  if (trimmed.length > MAX_INTAKE_THOUGHTS_LENGTH) {
+    return {
+      valid: false,
+      error: `Please keep your response under ${MAX_INTAKE_THOUGHTS_LENGTH} characters (${trimmed.length}/${MAX_INTAKE_THOUGHTS_LENGTH})`,
+      errorCode: 'TOO_LONG'
+    }
+  }
+
+  // Apply sanitization (reuse existing function)
+  const sanitized = sanitizeMessage(trimmed)
+
+  // Verify sanitized message isn't empty
+  if (!sanitized || sanitized.length === 0) {
+    return {
+      valid: false,
+      error: 'Input contains only invalid characters',
+      errorCode: 'INVALID_CHARS'
+    }
+  }
+
+  return {
+    valid: true,
+    sanitizedInput: sanitized
+  }
+}
+
+/**
+ * Get intake validation limits (for frontend use)
+ */
+export function getIntakeValidationLimits() {
+  return {
+    maxLength: MAX_INTAKE_THOUGHTS_LENGTH,
+    minLength: MIN_INTAKE_THOUGHTS_LENGTH
   }
 }

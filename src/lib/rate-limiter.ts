@@ -71,14 +71,34 @@ export function getClientIP(request: Request): string {
  * Check if a client has exceeded their rate limit
  *
  * @param clientId - Usually the client's IP address
+ * @param isIntake - If true, this is an intake flow request (exempt from rate limiting)
  * @returns Object with allowed status and current usage count
+ *
+ * @example
+ * // Regular chat message - counts against limit
+ * const result = checkRateLimit(clientIP)
+ *
+ * @example
+ * // Intake flow message - always allowed, doesn't count
+ * const result = checkRateLimit(clientIP, true)
  */
-export function checkRateLimit(clientId: string): {
+export function checkRateLimit(clientId: string, isIntake: boolean = false): {
   allowed: boolean
   currentCount: number
   limit: number
   resetsAt: number
 } {
+  // Intake flow requests are exempt from rate limiting
+  // They don't count toward the 3 free messages
+  if (isIntake) {
+    return {
+      allowed: true,
+      currentCount: 0,
+      limit: MAX_FREE_MESSAGES,
+      resetsAt: Date.now() + RATE_LIMIT_WINDOW_MS
+    }
+  }
+
   const now = Date.now()
   const entry = rateLimitStore.get(clientId)
 
@@ -117,8 +137,22 @@ export function checkRateLimit(clientId: string): {
  * Call this AFTER successfully processing a request
  *
  * @param clientId - Usually the client's IP address
+ * @param isIntake - If true, this is an intake flow request (don't increment counter)
+ *
+ * @example
+ * // Regular chat - increment counter
+ * incrementRateLimit(clientIP)
+ *
+ * @example
+ * // Intake flow - don't increment (intake is exempt)
+ * incrementRateLimit(clientIP, true)
  */
-export function incrementRateLimit(clientId: string): void {
+export function incrementRateLimit(clientId: string, isIntake: boolean = false): void {
+  // Intake flow requests don't count toward the free message limit
+  if (isIntake) {
+    return
+  }
+
   const entry = rateLimitStore.get(clientId)
 
   if (entry) {

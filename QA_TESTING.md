@@ -1,9 +1,9 @@
 # QA Testing Documentation - Prompt Architect
 
 **Project:** Prompt Architect
-**Branch:** claude/prompt-architect-next-phases-015iqKxfVXkDGc1VgrjuaLRN
-**Testing Date:** 2025-11-19
-**Phase:** 3 & 4 Implementation Complete
+**Branch:** claude/onboarding-intake-flow-011fpDfcohzUU2SjXnwVu2Xv
+**Testing Date:** 2025-11-21
+**Phase:** Onboarding Intake Flow Complete
 
 ---
 
@@ -32,6 +32,15 @@ This document provides comprehensive testing procedures for the Prompt Architect
 - ✅ Magic numbers extracted to constants
 - ✅ Code organization improved
 - ✅ Removed deprecated components
+
+**Onboarding Intake Flow (November 21, 2025)**
+- ✅ 3-step onboarding intake flow implemented
+- ✅ 8 new onboarding components added
+- ✅ Intake API endpoint created (`/api/chat/intake`)
+- ✅ Cookie-based session persistence
+- ✅ Timer cleanup with useRef pattern
+- ✅ Copy feedback error handling
+- ✅ Shared CheckIcon component extracted
 
 ---
 
@@ -217,6 +226,158 @@ This document provides comprehensive testing procedures for the Prompt Architect
 - ✅ Scroll to bottom on new message
 
 **Actual Results:** [TO BE FILLED BY QA ENGINEER]
+
+**Status:** [ ] Pass  [ ] Fail
+
+---
+
+## 1B. Onboarding Intake Flow Testing
+
+### Test Case 1B.1: Complete Intake Flow
+
+**Objective:** Verify 3-step intake flow completes successfully
+
+**Steps:**
+1. Navigate to http://localhost:3001
+2. Verify intake flow displays (Step 1 of 3)
+3. Select "ChatGPT" as AI tool
+4. Verify Step 2 shows with "Prompt Architect" recommended
+5. Select "Prompt Architect"
+6. Verify Step 3 shows input field
+7. Enter 50+ characters describing your needs
+8. Click "Generate My Prompt"
+9. Verify output displays with setup instructions
+
+**Expected Results:**
+- ✅ All 3 steps navigate correctly
+- ✅ Progress indicator updates
+- ✅ Output displays with two sections (for Prompt Architect)
+- ✅ Copy buttons work
+- ✅ Session persists on page refresh
+
+**Status:** [ ] Pass  [ ] Fail
+
+---
+
+### Test Case 1B.2: Input Validation (20-500 chars)
+
+**Objective:** Verify intake input validation enforces character limits
+
+**Steps:**
+1. Navigate to Step 3 of intake
+2. Enter less than 20 characters
+3. Attempt to submit
+4. Verify validation error shown
+5. Enter more than 500 characters
+6. Verify character counter shows over-limit
+7. Enter exactly 50 characters
+8. Verify submit button enabled
+
+**Expected Results:**
+- ✅ Under 20 chars: validation error displayed
+- ✅ Over 500 chars: character counter turns red
+- ✅ 20-500 chars: submit enabled
+- ✅ Server validates input length (400 on failure)
+
+**Status:** [ ] Pass  [ ] Fail
+
+---
+
+### Test Case 1B.3: Dynamic Prompt Type Filtering
+
+**Objective:** Verify prompt types filter based on AI tool
+
+**Steps:**
+1. Select "ChatGPT" → verify Projects available
+2. Go back, select "Claude" → verify Projects available
+3. Go back, select "Gemini" → verify Gems available (not Projects)
+4. Go back, select "Copilot" → verify only General Prompt available
+
+**Expected Results:**
+- ✅ ChatGPT: Prompt Architect, Custom Instructions, Projects, General Prompt
+- ✅ Claude: Prompt Architect, Custom Instructions, Projects, General Prompt
+- ✅ Gemini: Prompt Architect, Custom Instructions, Gems, General Prompt
+- ✅ Copilot: Custom Instructions, General Prompt only
+
+**Status:** [ ] Pass  [ ] Fail
+
+---
+
+### Test Case 1B.4: Session Persistence
+
+**Objective:** Verify session persists across page refreshes
+
+**Steps:**
+1. Complete Step 1 (select AI tool)
+2. Refresh page
+3. Verify "Welcome Back" screen appears
+4. Click "Continue to Chat"
+5. Verify chat interface loads
+
+**Expected Results:**
+- ✅ Session stored in localStorage
+- ✅ Cookie backup created
+- ✅ Returning users see welcome back screen
+- ✅ Start Over clears session
+
+**Status:** [ ] Pass  [ ] Fail
+
+---
+
+### Test Case 1B.5: Timer Cleanup (Memory Leak Prevention)
+
+**Objective:** Verify timers are cleaned up on component unmount
+
+**Steps:**
+1. Open browser DevTools → Console
+2. Complete intake, copy prompt (see "Copied!" message)
+3. Quickly click "Start Over" before 2 seconds
+4. Verify no console errors about state updates on unmounted components
+5. Repeat with reset confirmation timeout
+
+**Expected Results:**
+- ✅ No React warnings about unmounted state updates
+- ✅ Timers cleared on unmount
+- ✅ No memory leaks
+
+**Status:** [ ] Pass  [ ] Fail
+
+---
+
+### Test Case 1B.6: Copy Error Feedback
+
+**Objective:** Verify user-visible error when clipboard fails
+
+**Steps:**
+1. Open in HTTP (not HTTPS) or disable clipboard permissions
+2. Complete intake flow
+3. Click "Copy Prompt" button
+4. Verify error message appears
+
+**Expected Results:**
+- ✅ Error message: "Unable to copy. Try selecting the text manually."
+- ✅ Error auto-dismisses after 4 seconds
+- ✅ Error logged to console (dev only)
+
+**Status:** [ ] Pass  [ ] Fail
+
+---
+
+### Test Case 1B.7: Rate Limiter Exemption
+
+**Objective:** Verify intake doesn't count toward free message limit
+
+**Steps:**
+1. Complete intake flow (generates output)
+2. Click "Continue to Chat"
+3. Verify usage counter shows 0/3
+4. Send 3 messages
+5. Verify limit reached
+
+**Expected Results:**
+- ✅ Intake submission doesn't increment rate limit
+- ✅ Chat messages still limited to 3
+- ✅ Rate limiter correctly exempts intake API
 
 **Status:** [ ] Pass  [ ] Fail
 
@@ -585,7 +746,26 @@ npm run build
 
 ## Appendix: File Changes Summary
 
-### Files Added:
+### Files Added (Onboarding Intake Flow):
+- `src/app/api/chat/intake/route.ts` - Intake API endpoint
+- `src/components/onboarding/intake-context.tsx` - React Context for state
+- `src/components/onboarding/intake-flow.tsx` - Main container
+- `src/components/onboarding/ai-tool-selector.tsx` - Step 1 component
+- `src/components/onboarding/prompt-type-selector.tsx` - Step 2 component
+- `src/components/onboarding/initial-thoughts-input.tsx` - Step 3 component
+- `src/components/onboarding/output-display.tsx` - Output display with copy
+- `src/components/onboarding/example-output-modal.tsx` - Example preview modal
+- `src/components/onboarding/intake-progress-indicator.tsx` - Step indicator
+- `src/components/ui/check-icon.tsx` - Shared selection indicator
+- `src/lib/cookie-manager.ts` - Session persistence
+- `src/lib/intake-instructions.ts` - AI instructions loader
+- `src/lib/intake-helpers.ts` - Utility functions
+- `src/lib/output-formatter.ts` - Output formatting
+- `src/lib/example-outputs.ts` - Example content
+- `src/lib/setup-templates.ts` - Setup instruction templates
+- `src/types/intake.ts` - TypeScript type definitions
+
+### Files Added (Previous Phases):
 - `src/lib/constants.ts` - Application-wide constants
 
 ### Files Modified:
@@ -609,6 +789,6 @@ npm run build
 
 ---
 
-**Document Version:** 1.0
-**Last Updated:** 2025-11-19
-**Next Review:** After QA testing complete
+**Document Version:** 1.1
+**Last Updated:** 2025-11-21
+**Next Review:** After intake flow QA testing complete

@@ -11,6 +11,59 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 **Target Audience:** Regular folks who don't know how to prompt AI yet - marketers, small business owners, professionals seeking better AI results.
 
+## Quick Commands
+
+Use these trigger words to quickly activate specialized roles and tasks without typing full prompts.
+
+### Role Commands
+| Command | Role | What It Does |
+|---------|------|--------------|
+| `@dev` | Senior Developer | Implement features, fix bugs, write production-ready code |
+| `@qa` | QA Engineer | Review code for bugs, edge cases, performance, security |
+| `@docs` | Technical Writer | Update documentation (README, CLAUDE.md, code comments) |
+| `@architect` | Solution Architect | Design systems, create tech specs, plan architecture |
+| `@product` | Product Owner | Create PRDs, define requirements, prioritize features |
+
+### Task Commands
+| Command | Task | What It Does |
+|---------|------|--------------|
+| `@review` | Code Review | 5-dimension analysis: quality, bugs, performance, readability, security |
+| `@fix` | Fix Issues | Implement fixes for identified issues |
+| `@test` | Run Tests | Execute `npm run type-check && npm run lint && npm run build` |
+| `@commit` | Git Commit | Stage, commit with descriptive message, push to branch |
+| `@status` | Project Status | Show current git status, branch, recent commits |
+
+### Combo Commands
+| Command | What It Does |
+|---------|--------------|
+| `@qa @review` | QA Engineer performs full code review |
+| `@dev @fix` | Developer implements fixes |
+| `@docs @update` | Technical Writer updates all relevant docs |
+| `@test @commit` | Run tests, then commit if passing |
+
+### Usage Examples
+```
+User: @qa
+Claude: [Activates QA Engineer role] Ready to review. What would you like me to examine?
+
+User: @dev @fix the timer memory leaks
+Claude: [Activates Developer role] I'll implement fixes for the timer memory leaks...
+
+User: @review
+Claude: [Performs 5-dimension code review on recent changes]
+
+User: @test @commit
+Claude: [Runs tests, if passing commits and pushes changes]
+```
+
+### Notes
+- Commands are case-insensitive (`@QA` = `@qa`)
+- Multiple commands can be combined in one message
+- Add context after the command for specific tasks
+- Commands work best at the start of your message
+
+---
+
 ## Core Features
 
 - **Free tier**: 3 free chat messages per category with AI-powered prompt coaching
@@ -88,7 +141,8 @@ src/
 │   ├── api/                  # API routes
 │   │   ├── chat/             # Chat endpoints
 │   │   │   ├── route.ts      # Standard chat API
-│   │   │   └── enhanced/     # Enhanced chat with UI elements
+│   │   │   ├── enhanced/     # Enhanced chat with UI elements
+│   │   │   └── intake/       # Onboarding intake flow API
 │   │   └── test/             # Test endpoint
 │   ├── dashboard/            # Dashboard page (future)
 │   ├── layout.tsx            # Root layout
@@ -112,14 +166,31 @@ src/
 │   ├── dashboard/            # Dashboard components (future)
 │   ├── export/               # Export functionality
 │   ├── library/              # Prompt library (future)
-│   └── onboarding/           # Onboarding flow (future)
+│   └── onboarding/           # Onboarding intake flow components
+│       ├── intake-context.tsx           # React Context for state
+│       ├── intake-flow.tsx              # Main container
+│       ├── intake-progress-indicator.tsx # Step progress UI
+│       ├── ai-tool-selector.tsx         # Step 1: AI tool selection
+│       ├── prompt-type-selector.tsx     # Step 2: Prompt type selection
+│       ├── initial-thoughts-input.tsx   # Step 3: User input
+│       ├── output-display.tsx           # Generated output display
+│       └── example-output-modal.tsx     # Example preview modal
 │
-└── lib/                      # Utility functions & libraries
-    ├── constants.ts          # App-wide constants (NEW - Phase 3)
-    ├── logger.ts             # Environment-aware logging (NEW - Phase 3)
-    ├── together.ts           # Together.ai client
-    ├── rate-limiter.ts       # Server-side rate limiting
-    └── input-validation.ts   # Input sanitization & validation
+├── lib/                      # Utility functions & libraries
+│   ├── constants.ts          # App-wide constants
+│   ├── logger.ts             # Environment-aware logging
+│   ├── together.ts           # Together.ai client
+│   ├── rate-limiter.ts       # Server-side rate limiting
+│   ├── input-validation.ts   # Input sanitization & validation
+│   ├── cookie-manager.ts     # Intake session persistence
+│   ├── intake-instructions.ts # AI instructions loader
+│   ├── intake-helpers.ts     # Intake flow utilities
+│   ├── output-formatter.ts   # Output formatting for display
+│   ├── example-outputs.ts    # Example output content
+│   └── setup-templates.ts    # AI tool setup templates
+│
+└── types/                    # TypeScript type definitions
+    └── intake.ts             # Intake flow types and constants
 ```
 
 **Important Notes:**
@@ -164,6 +235,94 @@ Open http://localhost:3001 in browser.
 - Send 3 messages (free tier limit)
 - Verify upgrade prompt appears
 - Test rate limiting by attempting 4th message
+
+## Onboarding Intake Flow
+
+The onboarding intake flow is the first user experience that guides users through creating their first AI prompt. It's a 3-step process that collects user preferences and generates customized output.
+
+### Flow Overview
+
+```
+Step 1: AI Tool Selection     →  Step 2: Prompt Type Selection  →  Step 3: Initial Thoughts
+   (ChatGPT, Claude,                (Prompt Architect,                (20-500 characters)
+    Gemini, Copilot)                 Custom Instructions,
+                                     Projects, Gems,                  ↓
+                                     General Prompt)              API Call to Together.ai
+                                                                      ↓
+                                                               Output Display
+                                                           (Setup Instructions +
+                                                            Generated Prompt)
+```
+
+### Key Features
+
+- **Dynamic prompt type filtering**: Available options depend on selected AI tool
+- **Prompt Architect is recommended** for ChatGPT, Claude, and Gemini
+- **Session persistence**: Uses localStorage with cookie backup
+- **Rate limiter exempt**: Intake doesn't count toward free message limit
+- **Input validation**: 20-500 characters with client and server validation
+
+### API Endpoint
+
+```
+POST /api/chat/intake
+
+Request Body:
+{
+  "aiTool": "chatgpt" | "claude" | "gemini" | "copilot",
+  "promptType": "prompt-architect" | "custom-instructions" | "projects" | "gems" | "general-prompt",
+  "userThoughts": string (20-500 chars)
+}
+
+Response:
+{
+  "success": true,
+  "output": {
+    "section1": string | undefined,  // Setup instructions (Prompt Architect only)
+    "section2": string,              // Generated prompt
+    "promptType": string
+  }
+}
+```
+
+### Cookie/Session Management
+
+The intake flow uses a dual-storage strategy for persistence:
+
+```typescript
+// src/lib/cookie-manager.ts
+import { getCookie, setCookie, clearCookie, createIntakeSession } from '@/lib/cookie-manager'
+
+// Create new session
+const session = createIntakeSession()
+
+// Get existing session
+const cookie = getCookie()  // Returns IntakeCookie | null
+
+// Update session
+setCookie({ ...cookie, intakeCompleted: true })
+
+// Clear session
+clearCookie()
+```
+
+### React Context Usage
+
+```typescript
+import { IntakeProvider, useIntake } from '@/components/onboarding/intake-context'
+
+// Wrap in provider
+<IntakeProvider>
+  <IntakeFlow />
+</IntakeProvider>
+
+// Use hook
+const {
+  step, aiTool, promptType, userThoughts,
+  setAiTool, setPromptType, setUserThoughts,
+  submitIntake, resetIntake, output, isLoading, error
+} = useIntake()
+```
 
 ## Commands
 
@@ -429,6 +588,18 @@ if (!rateLimit.allowed) {
 
 ## Recent Changes Log
 
+### Onboarding Intake Flow (November 21, 2025)
+- ✅ Implemented 3-step onboarding intake flow
+- ✅ Created intake API endpoint (`/api/chat/intake`)
+- ✅ Added 8 new onboarding components in `src/components/onboarding/`
+- ✅ Created React Context for intake state management
+- ✅ Implemented cookie-based session persistence
+- ✅ Added rate limiter exemption for intake flow
+- ✅ Created AI instructions JSON with 10+ instruction sets
+- ✅ Added dynamic prompt type filtering by AI tool
+- ✅ Fixed race condition in returning user flow
+- ✅ Added input validation (20-500 characters)
+
 ### Phase 3 & 4 (November 19, 2025)
 - ✅ Removed deprecated `ChatInterface.tsx` component
 - ✅ Renamed all components to kebab-case per CONSTITUTION.md
@@ -450,6 +621,6 @@ if (!rateLimit.allowed) {
 
 ---
 
-**Last Updated:** November 19, 2025
-**Version:** 1.0.0 (Phase 3 & 4 Complete)
+**Last Updated:** November 21, 2025
+**Version:** 1.1.0 (Onboarding Intake Flow Complete)
 **CONSTITUTION Compliance:** ✅ 100%
