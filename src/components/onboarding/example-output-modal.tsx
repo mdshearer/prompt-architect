@@ -19,6 +19,7 @@ import { useState, useEffect, useCallback } from 'react'
 import type { AiTool } from '@/types/intake'
 import { getAiToolDisplayName } from '@/lib/intake-helpers'
 import { getExampleOutput } from '@/lib/example-outputs'
+import { logger } from '@/lib/logger'
 import { X, Copy, Check } from 'lucide-react'
 
 interface ExampleOutputModalProps {
@@ -64,7 +65,7 @@ export default function ExampleOutputModal({
       setCopied(true)
       setTimeout(() => setCopied(false), 2000)
     } catch (err) {
-      console.error('Failed to copy:', err)
+      logger.error('Failed to copy to clipboard', err)
     }
   }, [content])
 
