@@ -15,7 +15,7 @@
  * @module example-output-modal
  */
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import type { AiTool } from '@/types/intake'
 import { getAiToolDisplayName } from '@/lib/intake-helpers'
 import { getExampleOutput } from '@/lib/example-outputs'
@@ -47,23 +47,38 @@ export default function ExampleOutputModal({
   aiTool
 }: ExampleOutputModalProps) {
   const [copied, setCopied] = useState(false)
+  const copyTimerRef = useRef<NodeJS.Timeout | null>(null)
 
   // Get example content synchronously (no loading needed)
   const content = aiTool ? getExampleOutput(aiTool) : ''
 
-  // Reset copied state when closing
+  // Reset copied state when closing and cleanup timer
   useEffect(() => {
     if (!isOpen) {
       setCopied(false)
+      if (copyTimerRef.current) {
+        clearTimeout(copyTimerRef.current)
+        copyTimerRef.current = null
+      }
     }
   }, [isOpen])
 
+  // Cleanup timer on unmount
+  useEffect(() => {
+    return () => {
+      if (copyTimerRef.current) clearTimeout(copyTimerRef.current)
+    }
+  }, [])
+
   // Handle copy to clipboard
   const handleCopy = useCallback(async () => {
+    // Clear any existing timer
+    if (copyTimerRef.current) clearTimeout(copyTimerRef.current)
+
     try {
       await navigator.clipboard.writeText(content)
       setCopied(true)
-      setTimeout(() => setCopied(false), 2000)
+      copyTimerRef.current = setTimeout(() => setCopied(false), 2000)
     } catch (err) {
       logger.error('Failed to copy to clipboard', err)
     }

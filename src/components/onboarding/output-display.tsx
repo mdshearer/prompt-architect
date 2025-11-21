@@ -15,7 +15,7 @@
  * @module output-display
  */
 
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect, useRef } from 'react'
 import { useIntake } from './intake-context'
 import { getPromptTypeLabel } from '@/lib/intake-helpers'
 import { logger } from '@/lib/logger'
@@ -25,7 +25,8 @@ import {
   ChevronDown,
   ChevronUp,
   RotateCcw,
-  Sparkles
+  Sparkles,
+  AlertCircle
 } from 'lucide-react'
 
 /**
@@ -38,7 +39,22 @@ export default function OutputDisplay() {
   const { output, aiTool, promptType, resetIntake } = useIntake()
   const [section1Expanded, setSection1Expanded] = useState(true)
   const [copiedSection, setCopiedSection] = useState<'section1' | 'section2' | null>(null)
+  const [copyError, setCopyError] = useState<string | null>(null)
   const [showConfirmReset, setShowConfirmReset] = useState(false)
+
+  // Timer refs for cleanup to prevent memory leaks
+  const copyTimerRef = useRef<NodeJS.Timeout | null>(null)
+  const resetTimerRef = useRef<NodeJS.Timeout | null>(null)
+  const errorTimerRef = useRef<NodeJS.Timeout | null>(null)
+
+  // Cleanup timers on unmount
+  useEffect(() => {
+    return () => {
+      if (copyTimerRef.current) clearTimeout(copyTimerRef.current)
+      if (resetTimerRef.current) clearTimeout(resetTimerRef.current)
+      if (errorTimerRef.current) clearTimeout(errorTimerRef.current)
+    }
+  }, [])
 
   // Don't render if no output
   if (!output) {
@@ -52,24 +68,35 @@ export default function OutputDisplay() {
     const content = section === 'section1' ? output.section1 : output.section2
     if (!content) return
 
+    // Clear any existing timers
+    if (copyTimerRef.current) clearTimeout(copyTimerRef.current)
+    if (errorTimerRef.current) clearTimeout(errorTimerRef.current)
+
     try {
       await navigator.clipboard.writeText(content)
       setCopiedSection(section)
-      setTimeout(() => setCopiedSection(null), 2000)
+      setCopyError(null)
+      copyTimerRef.current = setTimeout(() => setCopiedSection(null), 2000)
     } catch (err) {
       logger.error('Failed to copy to clipboard', err)
+      // Show user-visible error feedback
+      setCopyError('Unable to copy. Try selecting the text manually.')
+      errorTimerRef.current = setTimeout(() => setCopyError(null), 4000)
     }
   }, [output])
 
   // Handle reset with confirmation
   const handleReset = useCallback(() => {
+    // Clear any existing reset timer
+    if (resetTimerRef.current) clearTimeout(resetTimerRef.current)
+
     if (showConfirmReset) {
       resetIntake()
       setShowConfirmReset(false)
     } else {
       setShowConfirmReset(true)
       // Auto-hide confirmation after 3 seconds
-      setTimeout(() => setShowConfirmReset(false), 3000)
+      resetTimerRef.current = setTimeout(() => setShowConfirmReset(false), 3000)
     }
   }, [showConfirmReset, resetIntake])
 
@@ -87,6 +114,14 @@ export default function OutputDisplay() {
           Copy and use the content below in your AI tool
         </p>
       </div>
+
+      {/* Copy error message */}
+      {copyError && (
+        <div className="mb-6 p-4 rounded-lg bg-red-50 border border-red-200 flex items-center gap-3">
+          <AlertCircle className="w-5 h-5 text-red-500 flex-shrink-0" />
+          <p className="text-sm text-red-700">{copyError}</p>
+        </div>
+      )}
 
       {/* Section 1: Setup Instructions (only for Prompt Architect) */}
       {hasSection1 && (
