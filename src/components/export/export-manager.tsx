@@ -2,15 +2,16 @@
 
 import { useState } from 'react'
 import { Download, Copy, FileText, File, CheckCircle, ChevronDown } from 'lucide-react'
+import { logger } from '@/lib/logger'
 
-interface ExportManagerProps {
+interface IExportManagerProps {
   content: string
   title?: string
   category?: string
   onExportComplete?: (format: string) => void
 }
 
-export default function ExportManager({ content, title = 'Generated Prompt', category, onExportComplete }: ExportManagerProps) {
+export default function ExportManager({ content, title = 'Generated Prompt', category, onExportComplete }: IExportManagerProps) {
   const [isOpen, setIsOpen] = useState(false)
   const [copiedFormat, setCopiedFormat] = useState<string | null>(null)
 
@@ -21,7 +22,7 @@ export default function ExportManager({ content, title = 'Generated Prompt', cat
       setTimeout(() => setCopiedFormat(null), 2000)
       onExportComplete?.('clipboard')
     } catch (err) {
-      console.error('Failed to copy to clipboard: ', err)
+      logger.error('Failed to copy to clipboard', err)
     }
   }
 
@@ -93,7 +94,7 @@ ${content}`
       setTimeout(() => setCopiedFormat(null), 2000)
       onExportComplete?.('notion')
     } catch (err) {
-      console.error('Failed to copy Notion format: ', err)
+      logger.error('Failed to copy Notion format', err)
     }
   }
 

@@ -2,8 +2,9 @@
 
 import { useState, useEffect } from 'react'
 import { CheckCircle, Copy, User, Target, Settings, Zap, BookOpen, Shield } from 'lucide-react'
+import { logger } from '@/lib/logger'
 
-interface CustomInstructionsData {
+interface ICustomInstructionsData {
   identity: string
   expertise: string
   communication: string
@@ -12,14 +13,14 @@ interface CustomInstructionsData {
   examples: string
 }
 
-interface CustomInstructionsBuilderProps {
+interface ICustomInstructionsBuilderProps {
   onComplete: (prompt: string) => void
   onClose: () => void
 }
 
 const CUSTOM_INSTRUCTION_COMPONENTS = [
   {
-    key: 'identity' as keyof CustomInstructionsData,
+    key: 'identity' as keyof ICustomInstructionsData,
     icon: User,
     title: 'Your Identity & Role',
     description: 'Who are you and what do you do?',
@@ -32,7 +33,7 @@ const CUSTOM_INSTRUCTION_COMPONENTS = [
     ]
   },
   {
-    key: 'expertise' as keyof CustomInstructionsData,
+    key: 'expertise' as keyof ICustomInstructionsData,
     icon: Target,
     title: 'Your Expertise & Knowledge',
     description: 'What do you know well, and what do you need help with?',
@@ -45,7 +46,7 @@ const CUSTOM_INSTRUCTION_COMPONENTS = [
     ]
   },
   {
-    key: 'communication' as keyof CustomInstructionsData,
+    key: 'communication' as keyof ICustomInstructionsData,
     icon: BookOpen,
     title: 'Communication Style',
     description: 'How do you prefer to receive information?',
@@ -58,7 +59,7 @@ const CUSTOM_INSTRUCTION_COMPONENTS = [
     ]
   },
   {
-    key: 'decision_framework' as keyof CustomInstructionsData,
+    key: 'decision_framework' as keyof ICustomInstructionsData,
     icon: Settings,
     title: 'Decision-Making Framework',
     description: 'How do you make decisions and evaluate options?',
@@ -71,7 +72,7 @@ const CUSTOM_INSTRUCTION_COMPONENTS = [
     ]
   },
   {
-    key: 'constraints' as keyof CustomInstructionsData,
+    key: 'constraints' as keyof ICustomInstructionsData,
     icon: Shield,
     title: 'Constraints & Boundaries',
     description: 'What limitations should the AI always consider?',
@@ -84,7 +85,7 @@ const CUSTOM_INSTRUCTION_COMPONENTS = [
     ]
   },
   {
-    key: 'examples' as keyof CustomInstructionsData,
+    key: 'examples' as keyof ICustomInstructionsData,
     icon: Zap,
     title: 'Success Examples',
     description: 'What are examples of great responses you\'ve received?',
@@ -98,9 +99,9 @@ const CUSTOM_INSTRUCTION_COMPONENTS = [
   }
 ]
 
-export default function CustomInstructionsBuilder({ onComplete, onClose }: CustomInstructionsBuilderProps) {
+export default function CustomInstructionsBuilder({ onComplete, onClose }: ICustomInstructionsBuilderProps) {
   const [currentStep, setCurrentStep] = useState(0)
-  const [data, setData] = useState<CustomInstructionsData>({
+  const [data, setData] = useState<ICustomInstructionsData>({
     identity: '',
     expertise: '',
     communication: '',
@@ -173,7 +174,7 @@ Always consider the above context in your responses. Tailor your communication s
       setCopied(true)
       setTimeout(() => setCopied(false), 2000)
     } catch (err) {
-      console.error('Failed to copy instructions:', err)
+      logger.error('Failed to copy instructions', err)
     }
   }
 

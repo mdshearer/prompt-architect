@@ -2,8 +2,9 @@
 
 import { useState, useEffect } from 'react'
 import { CheckCircle, Copy, Zap, Brain, Target, Database, Users, Settings } from 'lucide-react'
+import { logger } from '@/lib/logger'
 
-interface ProjectGemsData {
+interface IProjectGemsData {
   expertise: string
   knowledge_domain: string
   behavioral_guidelines: string
@@ -12,14 +13,14 @@ interface ProjectGemsData {
   integration: string
 }
 
-interface ProjectsGemsBuilderProps {
+interface IProjectsGemsBuilderProps {
   onComplete: (prompt: string) => void
   onClose: () => void
 }
 
 const PROJECT_COMPONENTS = [
   {
-    key: 'expertise' as keyof ProjectGemsData,
+    key: 'expertise' as keyof IProjectGemsData,
     icon: Brain,
     title: 'Expert Identity',
     description: 'What kind of specialist should this AI become?',
@@ -32,7 +33,7 @@ const PROJECT_COMPONENTS = [
     ]
   },
   {
-    key: 'knowledge_domain' as keyof ProjectGemsData,
+    key: 'knowledge_domain' as keyof IProjectGemsData,
     icon: Target,
     title: 'Knowledge Domain',
     description: 'What specific knowledge areas should this expert master?',
@@ -45,7 +46,7 @@ const PROJECT_COMPONENTS = [
     ]
   },
   {
-    key: 'behavioral_guidelines' as keyof ProjectGemsData,
+    key: 'behavioral_guidelines' as keyof IProjectGemsData,
     icon: Settings,
     title: 'Behavioral Guidelines',
     description: 'How should this expert think and communicate?',
@@ -58,7 +59,7 @@ const PROJECT_COMPONENTS = [
     ]
   },
   {
-    key: 'resources' as keyof ProjectGemsData,
+    key: 'resources' as keyof IProjectGemsData,
     icon: Database,
     title: 'Resources & Tools',
     description: 'What tools, frameworks, and resources should this expert reference?',
@@ -71,7 +72,7 @@ const PROJECT_COMPONENTS = [
     ]
   },
   {
-    key: 'limitations' as keyof ProjectGemsData,
+    key: 'limitations' as keyof IProjectGemsData,
     icon: Users,
     title: 'Scope & Limitations',
     description: 'What should this expert NOT do or advise on?',
@@ -84,7 +85,7 @@ const PROJECT_COMPONENTS = [
     ]
   },
   {
-    key: 'integration' as keyof ProjectGemsData,
+    key: 'integration' as keyof IProjectGemsData,
     icon: Zap,
     title: 'Integration & Workflow',
     description: 'How does this expert fit into existing workflows?',
@@ -116,10 +117,10 @@ const PLATFORM_INFO = {
   }
 }
 
-export default function ProjectsGemsBuilder({ onComplete, onClose }: ProjectsGemsBuilderProps) {
+export default function ProjectsGemsBuilder({ onComplete, onClose }: IProjectsGemsBuilderProps) {
   const [currentStep, setCurrentStep] = useState(0)
   const [selectedPlatform, setSelectedPlatform] = useState<keyof typeof PLATFORM_INFO>('chatgpt')
-  const [data, setData] = useState<ProjectGemsData>({
+  const [data, setData] = useState<IProjectGemsData>({
     expertise: '',
     knowledge_domain: '',
     behavioral_guidelines: '',
@@ -199,7 +200,7 @@ Act as the expert defined above in all conversations. Always stay within your de
       setCopied(true)
       setTimeout(() => setCopied(false), 2000)
     } catch (err) {
-      console.error('Failed to copy project:', err)
+      logger.error('Failed to copy project', err)
     }
   }
 

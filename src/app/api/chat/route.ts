@@ -9,19 +9,7 @@ import {
   AI_TEMPERATURE_STANDARD,
   AI_TOP_P_STANDARD
 } from '@/lib/constants'
-
-interface Message {
-  id: string
-  content: string
-  role: 'user' | 'assistant'
-  timestamp: Date
-}
-
-interface ChatRequest {
-  message: string
-  category: 'custom_instructions' | 'projects_gems' | 'threads'
-  history: Message[]
-}
+import type { IMessage, IChatRequest, PromptCategory } from '@/types/chat'
 
 const SYSTEM_PROMPTS = {
   custom_instructions: `You are an expert AI prompt engineer specializing in custom instructions optimization. Your goal is to help users create powerful, clear, and effective custom instructions for AI systems.
@@ -77,7 +65,7 @@ export async function POST(request: NextRequest) {
       }, { status: 429 })
     }
 
-    const { message, category, history }: ChatRequest = await request.json()
+    const { message, category, history }: IChatRequest = await request.json()
 
     // Validate input before processing
     const messageValidation = validateMessage(message)
@@ -99,7 +87,8 @@ export async function POST(request: NextRequest) {
     }
 
     // Use sanitized message for API call
-    const sanitizedMessage = messageValidation.sanitizedMessage!
+    // Safe to assert: sanitizedMessage is guaranteed to exist when isValid is true
+    const sanitizedMessage = messageValidation.sanitizedMessage as string
 
     // Build conversation context
     const conversationHistory = history.slice(-CONVERSATION_CONTEXT_LIMIT_STANDARD) // Keep last N messages for context

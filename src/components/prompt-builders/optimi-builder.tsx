@@ -2,8 +2,9 @@
 
 import { useState, useEffect } from 'react'
 import { CheckCircle, Copy, Download, Zap, Target, User, List, Database, TrendingUp, Puzzle } from 'lucide-react'
+import { logger } from '@/lib/logger'
 
-interface OptimiData {
+interface IOptimiData {
   objective: string
   persona: string
   task: string
@@ -12,7 +13,7 @@ interface OptimiData {
   integration: string
 }
 
-interface OptimiBuilderProps {
+interface IOptimiBuilderProps {
   onComplete: (prompt: string) => void
   onClose: () => void
   category: string
@@ -20,7 +21,7 @@ interface OptimiBuilderProps {
 
 const OPTIMI_COMPONENTS = [
   {
-    key: 'objective' as keyof OptimiData,
+    key: 'objective' as keyof IOptimiData,
     icon: Target,
     title: 'Objective',
     description: 'What specific outcome do you want to achieve?',
@@ -33,7 +34,7 @@ const OPTIMI_COMPONENTS = [
     ]
   },
   {
-    key: 'persona' as keyof OptimiData,
+    key: 'persona' as keyof IOptimiData,
     icon: User,
     title: 'Persona',
     description: 'Who should the AI become to help you best?',
@@ -46,7 +47,7 @@ const OPTIMI_COMPONENTS = [
     ]
   },
   {
-    key: 'task' as keyof OptimiData,
+    key: 'task' as keyof IOptimiData,
     icon: List,
     title: 'Task',
     description: 'What specific steps should the AI take?',
@@ -59,7 +60,7 @@ const OPTIMI_COMPONENTS = [
     ]
   },
   {
-    key: 'input' as keyof OptimiData,
+    key: 'input' as keyof IOptimiData,
     icon: Database,
     title: 'Input',
     description: 'What context, data, or constraints should the AI consider?',
@@ -72,7 +73,7 @@ const OPTIMI_COMPONENTS = [
     ]
   },
   {
-    key: 'measurement' as keyof OptimiData,
+    key: 'measurement' as keyof IOptimiData,
     icon: TrendingUp,
     title: 'Measurement',
     description: 'How will you know this is successful?',
@@ -85,7 +86,7 @@ const OPTIMI_COMPONENTS = [
     ]
   },
   {
-    key: 'integration' as keyof OptimiData,
+    key: 'integration' as keyof IOptimiData,
     icon: Puzzle,
     title: 'Integration',
     description: 'How does this fit into your broader workflow?',
@@ -99,9 +100,9 @@ const OPTIMI_COMPONENTS = [
   }
 ]
 
-export default function OptimiBuilder({ onComplete, onClose, category }: OptimiBuilderProps) {
+export default function OptimiBuilder({ onComplete, onClose, category }: IOptimiBuilderProps) {
   const [currentStep, setCurrentStep] = useState(0)
-  const [data, setData] = useState<OptimiData>({
+  const [data, setData] = useState<IOptimiData>({
     objective: '',
     persona: '',
     task: '',
@@ -167,7 +168,7 @@ Please provide your response following this structure and meeting all specified 
       setCopied(true)
       setTimeout(() => setCopied(false), 2000)
     } catch (err) {
-      console.error('Failed to copy prompt:', err)
+      logger.error('Failed to copy prompt', err)
     }
   }
 

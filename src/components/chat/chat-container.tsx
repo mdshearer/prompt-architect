@@ -5,33 +5,15 @@ import MessageList from './message-list'
 import InputArea from './input-area'
 import ChatHeader from './chat-header'
 import { MAX_FREE_MESSAGES, CONVERSATION_CONTEXT_LIMIT_ENHANCED, API_TIMEOUT_MS } from '@/lib/constants'
+import type { IMessage, IUIElements, PromptCategory } from '@/types/chat'
 
-interface UIElements {
-  show_examples?: boolean
-  platform_selector?: string[]
-  next_action?: 'optimi_builder' | 'custom_instructions_builder' | 'project_builder'
-  educational_content?: {
-    concept: string
-    level: 'beginner' | 'intermediate' | 'advanced'
-  }
-}
-
-interface Message {
-  id: string
-  content: string
-  role: 'user' | 'assistant'
-  timestamp: Date
-  status?: 'sending' | 'sent' | 'error'
-  ui_elements?: UIElements
-}
-
-interface ChatContainerProps {
-  category: 'custom_instructions' | 'projects_gems' | 'threads'
+interface IChatContainerProps {
+  category: PromptCategory
   onClose: () => void
 }
 
-export default function ChatContainer({ category, onClose }: ChatContainerProps) {
-  const [messages, setMessages] = useState<Message[]>([])
+export default function ChatContainer({ category, onClose }: IChatContainerProps) {
+  const [messages, setMessages] = useState<IMessage[]>([])
   const [isLoading, setIsLoading] = useState(false)
   const [usageCount, setUsageCount] = useState(0)
   const messagesEndRef = useRef<HTMLDivElement>(null)
@@ -72,7 +54,7 @@ export default function ChatContainer({ category, onClose }: ChatContainerProps)
       }
     }
 
-    const welcomeMessage: Message = {
+    const welcomeMessage: IMessage = {
       id: '1',
       content: welcomeMessages[category].content,
       role: 'assistant',
@@ -94,7 +76,7 @@ export default function ChatContainer({ category, onClose }: ChatContainerProps)
 
   const handlePromptGenerated = (prompt: string) => {
     // Add the generated prompt as a user message
-    const promptMessage: Message = {
+    const promptMessage: IMessage = {
       id: crypto.randomUUID(),
       content: `Here's my generated prompt:\n\n${prompt}`,
       role: 'user',
@@ -104,7 +86,7 @@ export default function ChatContainer({ category, onClose }: ChatContainerProps)
     setMessages(prev => [...prev, promptMessage])
 
     // Add a congratulatory AI response
-    const responseMessage: Message = {
+    const responseMessage: IMessage = {
       id: crypto.randomUUID(),
       content: "**Prompt Generated Successfully**\n\nYour professional prompt has been created and is ready for use. Next steps:\n\n- **Copy and implement** this prompt in your preferred AI platform\n- **Test the results** and evaluate performance\n- **Refine as needed** based on your specific requirements\n- **Document** for future reference\n\nWould you like to create another prompt or optimize this implementation?",
       role: 'assistant',
@@ -125,7 +107,7 @@ export default function ChatContainer({ category, onClose }: ChatContainerProps)
     // Increment counter optimistically to prevent race condition on rapid clicks
     setUsageCount(prev => prev + 1)
 
-    const userMessage: Message = {
+    const userMessage: IMessage = {
       id: crypto.randomUUID(),
       content: content.trim(),
       role: 'user',
@@ -167,7 +149,7 @@ export default function ChatContainer({ category, onClose }: ChatContainerProps)
       const data = await response.json()
 
       if (data.success) {
-        const assistantMessage: Message = {
+        const assistantMessage: IMessage = {
           id: crypto.randomUUID(),
           content: data.message,
           role: 'assistant',
@@ -189,7 +171,7 @@ export default function ChatContainer({ category, onClose }: ChatContainerProps)
         errorContent = 'The request timed out. Please check your connection and try again.'
       }
 
-      const errorMessage: Message = {
+      const errorMessage: IMessage = {
         id: crypto.randomUUID(),
         content: errorContent,
         role: 'assistant',

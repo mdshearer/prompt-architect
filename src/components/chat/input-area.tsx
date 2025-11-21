@@ -2,15 +2,19 @@
 
 import { useState, useRef, KeyboardEvent, useMemo } from 'react'
 import { Send, Sparkles, Zap } from 'lucide-react'
+import { MAX_MESSAGE_LENGTH } from '@/lib/constants'
 
-interface InputAreaProps {
+/** Threshold at which to show character count indicator */
+const CHARACTER_COUNT_THRESHOLD = 100
+
+interface IInputAreaProps {
   onSendMessage: (content: string) => void
   disabled: boolean
   usageCount: number
   maxUsage: number
 }
 
-export default function InputArea({ onSendMessage, disabled, usageCount, maxUsage }: InputAreaProps) {
+export default function InputArea({ onSendMessage, disabled, usageCount, maxUsage }: IInputAreaProps) {
   const [input, setInput] = useState('')
   const textareaRef = useRef<HTMLTextAreaElement>(null)
 
@@ -118,9 +122,9 @@ export default function InputArea({ onSendMessage, disabled, usageCount, maxUsag
           />
           
           {/* Character count for longer messages */}
-          {input.length > 100 && (
+          {input.length > CHARACTER_COUNT_THRESHOLD && (
             <div className="absolute bottom-2 right-12 text-xs text-gray-400">
-              {input.length}/2000
+              {input.length}/{MAX_MESSAGE_LENGTH}
             </div>
           )}
         </div>

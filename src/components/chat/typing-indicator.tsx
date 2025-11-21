@@ -1,12 +1,13 @@
 'use client'
 
 import { Bot } from 'lucide-react'
+import type { PromptCategory } from '@/types/chat'
 
-interface TypingIndicatorProps {
-  category: 'custom_instructions' | 'projects_gems' | 'threads'
+interface ITypingIndicatorProps {
+  category: PromptCategory
 }
 
-export default function TypingIndicator({ category }: TypingIndicatorProps) {
+export default function TypingIndicator({ category }: ITypingIndicatorProps) {
   const getCategoryColor = () => {
     switch (category) {
       case 'custom_instructions': return 'optimi-primary'
