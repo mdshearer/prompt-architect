@@ -1,0 +1,16 @@
+<svg width="200" height="80" viewBox="0 0 200 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="gradient-full" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0078FF;stop-opacity:1" />
+      <stop offset="33%" style="stop-color:#00C896;stop-opacity:1" />
+      <stop offset="66%" style="stop-color:#FFDC00;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#0078FF;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+
+  <!-- Gradient circle (simplified version) -->
+  <circle cx="32" cy="32" r="28" fill="none" stroke="url(#gradient-full)" stroke-width="8"/>
+
+  <!-- Optimi text -->
+  <text x="75" y="48" font-family="system-ui, -apple-system, sans-serif" font-size="32" font-weight="600" fill="#283791">optimi</text>
+</svg>
