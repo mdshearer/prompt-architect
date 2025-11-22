@@ -246,6 +246,121 @@ export function getAiToolDescription(aiTool: AiTool): string {
 }
 
 /**
+ * Returns the URL for an AI tool
+ *
+ * @param aiTool - The AI tool identifier
+ * @returns URL string for the tool
+ *
+ * @example
+ * getAiToolUrl('chatgpt') // Returns: "https://chat.openai.com"
+ */
+export function getAiToolUrl(aiTool: AiTool): string {
+  const urls: Record<AiTool, string> = {
+    chatgpt: 'https://chat.openai.com',
+    claude: 'https://claude.ai',
+    gemini: 'https://gemini.google.com',
+    copilot: 'https://copilot.microsoft.com'
+  }
+  return urls[aiTool] || ''
+}
+
+/**
+ * Returns the "Next Steps" instructions for using the generated prompt
+ *
+ * Provides tool-specific guidance on how to use the generated output,
+ * including where to navigate and what to do.
+ *
+ * @param aiTool - The selected AI tool
+ * @param promptType - The type of prompt generated
+ * @returns Array of step strings
+ *
+ * @example
+ * getNextSteps('chatgpt', 'custom-instructions')
+ * // Returns: ['Copy the prompt above', 'Open ChatGPT Settings → Personalization', ...]
+ */
+export function getNextSteps(aiTool: AiTool | null, promptType: PromptType | null): string[] {
+  if (!aiTool) {
+    return [
+      'Copy the prompt above',
+      'Paste it into your AI tool',
+      'Start creating!'
+    ]
+  }
+
+  const toolName = getAiToolDisplayName(aiTool)
+
+  // Tool-specific instructions based on prompt type
+  if (promptType === 'custom-instructions') {
+    switch (aiTool) {
+      case 'chatgpt':
+        return [
+          'Copy the prompt above',
+          'Open ChatGPT → Settings → Personalization → Custom Instructions',
+          'Paste into the "How would you like ChatGPT to respond?" field',
+          'Save and start a new conversation'
+        ]
+      case 'claude':
+        return [
+          'Copy the prompt above',
+          'Open Claude → Your Profile → Custom Style',
+          'Paste and enable "Use custom style"',
+          'Start a new conversation'
+        ]
+      default:
+        return [
+          'Copy the prompt above',
+          `Open ${toolName} settings`,
+          'Paste into the custom instructions area',
+          'Start a new conversation'
+        ]
+    }
+  }
+
+  if (promptType === 'projects' || promptType === 'prompt-architect') {
+    switch (aiTool) {
+      case 'chatgpt':
+        return [
+          'Copy the prompt above',
+          'Open ChatGPT → Projects → Create New Project',
+          'Paste into the project instructions',
+          'Add any relevant files and start chatting'
+        ]
+      case 'claude':
+        return [
+          'Copy the prompt above',
+          'Open Claude → Projects → Create Project',
+          'Paste into the project custom instructions',
+          'Add context files and begin your conversation'
+        ]
+      default:
+        return [
+          'Copy the prompt above',
+          `Create a new project in ${toolName}`,
+          'Paste into the project instructions',
+          'Start working!'
+        ]
+    }
+  }
+
+  if (promptType === 'gems') {
+    return [
+      'Copy the prompt above',
+      'Open Gemini → Gem Manager → Create New Gem',
+      'Paste into the Gem instructions',
+      'Save and start using your custom Gem'
+    ]
+  }
+
+  // Default for general prompts
+  return [
+    'Copy the prompt above',
+    `Open ${toolName}`,
+    'Paste into a new conversation',
+    'Hit enter and see the magic!'
+  ]
+}
+
+/**
  * Validates that a character count is within acceptable range
  *
  * @param count - The current character count
