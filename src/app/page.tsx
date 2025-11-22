@@ -21,7 +21,7 @@ import { getCookie } from '@/lib/cookie-manager'
 import { getAiToolDisplayName, getPromptTypeLabel } from '@/lib/intake-helpers'
 import type { IntakeCookie } from '@/types/intake'
 import type { PromptCategory } from '@/types/chat'
-import { ArrowRight, RotateCcw, Sparkles } from 'lucide-react'
+import { ArrowRight, RotateCcw, Sparkles, MessageSquare, Bot, Gem, Laptop } from 'lucide-react'
 
 /**
  * Inner content component that uses the intake context
@@ -70,7 +70,7 @@ function HomeContent() {
     return (
       <main className="min-h-screen bg-gray-50">
         <div className="container mx-auto px-4 py-8">
-          <Header />
+          <CompactHeader />
 
           <div className="max-w-4xl mx-auto">
             {/* Show the output display from intake flow */}
@@ -101,7 +101,7 @@ function HomeContent() {
     return (
       <main className="min-h-screen bg-gray-50">
         <div className="container mx-auto px-4 py-8">
-          <Header />
+          <CompactHeader />
 
           <div className="max-w-2xl mx-auto">
             <div className="bg-white rounded-xl shadow-lg p-8 text-center">
@@ -153,20 +153,23 @@ function HomeContent() {
     )
   }
 
-  // Default: Show the intake flow
+  // Default: Show the intake flow with hero section
   return (
-    <main className="min-h-screen bg-gray-50">
+    <main className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
       <div className="container mx-auto px-4 py-8">
-        <Header />
+        <HeroSection />
 
-        <div className="max-w-4xl mx-auto bg-white rounded-xl shadow-lg overflow-hidden">
+        <div className="max-w-4xl mx-auto bg-white rounded-xl shadow-lg overflow-hidden border border-gray-100">
           <IntakeFlow />
         </div>
 
         {/* Free tier notice */}
-        <div className="text-center mt-6">
-          <div className="inline-flex items-center space-x-2 text-sm text-gray-500 bg-white px-4 py-2 rounded-lg shadow-sm">
-            <span>Intake is free</span>
+        <div className="text-center mt-8">
+          <div className="inline-flex items-center space-x-3 text-sm text-gray-500 bg-white px-5 py-3 rounded-full shadow-sm border border-gray-100">
+            <span className="flex items-center gap-1.5">
+              <span className="w-2 h-2 rounded-full bg-optimi-green" />
+              Intake is free
+            </span>
             <span className="text-gray-300">•</span>
             <span>3 follow-up chats included</span>
           </div>
@@ -177,21 +180,85 @@ function HomeContent() {
 }
 
 /**
- * Header component for the homepage
+ * AI tool icons for the supported tools section
  */
-function Header() {
+const SUPPORTED_TOOLS = [
+  { name: 'ChatGPT', icon: MessageSquare, color: 'text-green-600' },
+  { name: 'Claude', icon: Bot, color: 'text-orange-500' },
+  { name: 'Gemini', icon: Gem, color: 'text-blue-500' },
+  { name: 'Copilot', icon: Laptop, color: 'text-cyan-600' }
+]
+
+/**
+ * Hero section component for the landing page
+ * Features the main tagline, value prop, and supported tools
+ */
+function HeroSection({ showCta = false, onCtaClick }: { showCta?: boolean; onCtaClick?: () => void }) {
   return (
     <header className="text-center mb-12">
-      <h1 className="text-5xl font-bold text-gray-900 mb-6 tracking-tight">
-        Prompt Architect
+      {/* Logo/Brand */}
+      <div className="mb-8">
+        <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-optimi-primary to-optimi-blue mb-4">
+          <Sparkles className="w-8 h-8 text-white" />
+        </div>
+        <p className="text-sm font-medium text-optimi-primary tracking-wider uppercase">
+          Prompt Architect
+        </p>
+      </div>
+
+      {/* Main Tagline */}
+      <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 mb-6 tracking-tight">
+        Stop Guessing.{' '}
+        <span className="text-transparent bg-clip-text bg-gradient-to-r from-optimi-primary to-optimi-blue">
+          Start Architecting.
+        </span>
       </h1>
-      <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-        Build better AI prompts with expert guidance. Create personalized instructions for{' '}
-        <span className="font-semibold text-optimi-primary">ChatGPT</span>,{' '}
-        <span className="font-semibold text-optimi-primary">Claude</span>,{' '}
-        <span className="font-semibold text-optimi-primary">Gemini</span>, or{' '}
-        <span className="font-semibold text-optimi-primary">Copilot</span>.
+
+      {/* Value Proposition */}
+      <p className="text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed mb-8">
+        Build structured, high-performance prompts for any AI model
+        by answering simple questions.
       </p>
+
+      {/* CTA Button (optional) */}
+      {showCta && onCtaClick && (
+        <button
+          onClick={onCtaClick}
+          className="inline-flex items-center gap-2 px-8 py-4 rounded-xl bg-optimi-primary text-white font-semibold text-lg hover:bg-optimi-primary/90 transition-all hover:scale-105 shadow-lg shadow-optimi-primary/25"
+        >
+          Start Building Your First Prompt
+          <ArrowRight className="w-5 h-5" />
+        </button>
+      )}
+
+      {/* Supported Tools */}
+      <div className="mt-12 pt-8 border-t border-gray-200">
+        <p className="text-sm text-gray-500 mb-4">Supported AI Tools</p>
+        <div className="flex items-center justify-center gap-8 flex-wrap">
+          {SUPPORTED_TOOLS.map((tool) => (
+            <div key={tool.name} className="flex items-center gap-2 text-gray-600">
+              <tool.icon className={`w-5 h-5 ${tool.color}`} />
+              <span className="font-medium">{tool.name}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </header>
+  )
+}
+
+/**
+ * Compact header for pages after initial landing
+ */
+function CompactHeader() {
+  return (
+    <header className="text-center mb-8">
+      <div className="inline-flex items-center gap-3 mb-4">
+        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-optimi-primary to-optimi-blue flex items-center justify-center">
+          <Sparkles className="w-5 h-5 text-white" />
+        </div>
+        <h1 className="text-2xl font-bold text-gray-900">Prompt Architect</h1>
+      </div>
     </header>
   )
 }

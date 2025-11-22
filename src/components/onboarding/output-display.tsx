@@ -17,7 +17,7 @@
 
 import { useState, useCallback, useEffect, useRef } from 'react'
 import { useIntake } from './intake-context'
-import { getPromptTypeLabel } from '@/lib/intake-helpers'
+import { getPromptTypeLabel, getNextSteps, getAiToolUrl, getAiToolDisplayName } from '@/lib/intake-helpers'
 import { logger } from '@/lib/logger'
 import {
   Copy,
@@ -26,7 +26,9 @@ import {
   ChevronUp,
   RotateCcw,
   Sparkles,
-  AlertCircle
+  AlertCircle,
+  ExternalLink,
+  ArrowRight
 } from 'lucide-react'
 
 /**
@@ -234,6 +236,42 @@ export default function OutputDisplay() {
               )}
             </button>
           </div>
+        </div>
+      </div>
+
+      {/* Next Steps Section */}
+      <div className="mb-8">
+        <div className="bg-gradient-to-br from-optimi-blue/5 to-optimi-green/5 rounded-xl border border-optimi-blue/20 p-6">
+          <h3 className="font-semibold text-optimi-gray mb-4 flex items-center gap-2">
+            <ArrowRight className="w-5 h-5 text-optimi-blue" />
+            Next Steps
+          </h3>
+
+          <ol className="space-y-3">
+            {getNextSteps(aiTool, promptType).map((step, index) => (
+              <li key={index} className="flex items-start gap-3">
+                <span className="flex-shrink-0 w-6 h-6 rounded-full bg-optimi-blue/10 text-optimi-blue text-sm font-medium flex items-center justify-center">
+                  {index + 1}
+                </span>
+                <span className="text-gray-700 pt-0.5">{step}</span>
+              </li>
+            ))}
+          </ol>
+
+          {/* Quick link to AI tool */}
+          {aiTool && (
+            <div className="mt-6 pt-4 border-t border-optimi-blue/10">
+              <a
+                href={getAiToolUrl(aiTool)}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-optimi-blue text-white font-medium hover:bg-optimi-blue/90 transition-colors"
+              >
+                Open {getAiToolDisplayName(aiTool)}
+                <ExternalLink className="w-4 h-4" />
+              </a>
+            </div>
+          )}
         </div>
       </div>
 
