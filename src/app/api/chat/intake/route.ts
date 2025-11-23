@@ -66,7 +66,7 @@ export async function POST(request: NextRequest): Promise<NextResponse<IntakeAPI
     const clientIP = getClientIP(request)
 
     // Check rate limit with isIntake=true (will always pass, but maintains consistency)
-    const rateLimit = checkRateLimit(clientIP, true)
+    const rateLimit = await checkRateLimit(clientIP, undefined, true)
     logger.info('Intake request received', { clientIP, allowed: rateLimit.allowed })
 
     // Parse request body
