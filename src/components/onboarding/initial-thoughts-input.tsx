@@ -157,10 +157,10 @@ export default function InitialThoughtsInput() {
             disabled={isSubmitDisabled}
             className={`
               inline-flex items-center gap-2 px-8 py-3 rounded-xl
-              font-semibold text-white transition-all duration-200
+              font-semibold transition-all duration-200
               ${isSubmitDisabled
-                ? 'bg-gray-300 cursor-not-allowed'
-                : 'bg-optimi-primary hover:bg-optimi-primary/90 hover:shadow-lg'
+                ? 'bg-gray-400 text-gray-200 cursor-not-allowed opacity-60'
+                : 'bg-optimi-primary text-white hover:bg-optimi-primary/90 hover:shadow-lg shadow-md'
               }
               focus:outline-none focus:ring-2 focus:ring-optimi-primary focus:ring-offset-2
             `}
