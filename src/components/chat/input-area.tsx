@@ -12,9 +12,10 @@ interface IInputAreaProps {
   disabled: boolean
   usageCount: number
   maxUsage: number
+  hasUnlimitedAccess?: boolean
 }
 
-export default function InputArea({ onSendMessage, disabled, usageCount, maxUsage }: IInputAreaProps) {
+export default function InputArea({ onSendMessage, disabled, usageCount, maxUsage, hasUnlimitedAccess = false }: IInputAreaProps) {
   const [input, setInput] = useState('')
   const textareaRef = useRef<HTMLTextAreaElement>(null)
 
@@ -58,7 +59,7 @@ export default function InputArea({ onSendMessage, disabled, usageCount, maxUsag
     textarea.style.height = Math.min(textarea.scrollHeight, 120) + 'px'
   }
 
-  const isAtLimit = usageCount >= maxUsage
+  const isAtLimit = !hasUnlimitedAccess && usageCount >= maxUsage
 
   // Memoize placeholder text to avoid recalculation on every render
   const placeholderText = useMemo(() => {
@@ -101,9 +102,11 @@ export default function InputArea({ onSendMessage, disabled, usageCount, maxUsag
             <Zap className="w-4 h-4" />
             <span>Include specific details about your role and requirements for optimal results</span>
           </div>
-          <div className="text-sm text-gray-500">
-            {maxUsage - usageCount} free {maxUsage - usageCount === 1 ? 'message' : 'messages'} remaining
-          </div>
+          {!hasUnlimitedAccess && (
+            <div className="text-sm text-gray-500">
+              {maxUsage - usageCount} free {maxUsage - usageCount === 1 ? 'message' : 'messages'} remaining
+            </div>
+          )}
         </div>
       )}
 

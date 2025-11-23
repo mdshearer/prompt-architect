@@ -19,6 +19,10 @@ import { useState, useCallback, useEffect, useRef } from 'react'
 import { useIntake } from './intake-context'
 import { getPromptTypeLabel, getNextSteps, getAiToolUrl, getAiToolDisplayName } from '@/lib/intake-helpers'
 import { logger } from '@/lib/logger'
+import { hasStoredLead, setStoredLeadId } from '@/lib/lead-storage'
+import type { IEmailCaptureForm, ICreateLeadResponse } from '@/types/lead'
+import EmailCaptureModal from '@/components/lead-capture/email-capture-modal'
+import ThankYouMessage from '@/components/lead-capture/thank-you-message'
 import {
   Copy,
   Check,
@@ -38,16 +42,22 @@ import {
  * <OutputDisplay />
  */
 export default function OutputDisplay() {
-  const { output, aiTool, promptType, resetIntake } = useIntake()
+  const { output, aiTool, promptType, resetIntake, userThoughts } = useIntake()
   const [section1Expanded, setSection1Expanded] = useState(true)
   const [copiedSection, setCopiedSection] = useState<'section1' | 'section2' | null>(null)
   const [copyError, setCopyError] = useState<string | null>(null)
   const [showConfirmReset, setShowConfirmReset] = useState(false)
 
+  // Email capture state
+  const [showEmailModal, setShowEmailModal] = useState(false)
+  const [emailCaptured, setEmailCaptured] = useState(false)
+  const [capturedEmail, setCapturedEmail] = useState<string>('')
+
   // Timer refs for cleanup to prevent memory leaks
   const copyTimerRef = useRef<NodeJS.Timeout | null>(null)
   const resetTimerRef = useRef<NodeJS.Timeout | null>(null)
   const errorTimerRef = useRef<NodeJS.Timeout | null>(null)
+  const emailModalTimerRef = useRef<NodeJS.Timeout | null>(null)
 
   // Cleanup timers on unmount
   useEffect(() => {
@@ -55,8 +65,27 @@ export default function OutputDisplay() {
       if (copyTimerRef.current) clearTimeout(copyTimerRef.current)
       if (resetTimerRef.current) clearTimeout(resetTimerRef.current)
       if (errorTimerRef.current) clearTimeout(errorTimerRef.current)
+      if (emailModalTimerRef.current) clearTimeout(emailModalTimerRef.current)
     }
   }, [])
+
+  // Show email capture modal after 2 seconds (only for new users)
+  useEffect(() => {
+    // Check if user already has a lead stored
+    if (hasStoredLead()) {
+      logger.info('User has stored lead, skipping email modal')
+      return
+    }
+
+    // Show modal after 2 second delay
+    emailModalTimerRef.current = setTimeout(() => {
+      setShowEmailModal(true)
+    }, 2000)
+
+    return () => {
+      if (emailModalTimerRef.current) clearTimeout(emailModalTimerRef.current)
+    }
+  }, []) // Run once on mount
 
   // Don't render if no output
   if (!output) {
@@ -102,8 +131,74 @@ export default function OutputDisplay() {
     }
   }, [showConfirmReset, resetIntake])
 
+  // Handle email submission
+  const handleEmailSubmit = useCallback(async (formData: IEmailCaptureForm) => {
+    try {
+      logger.info('Submitting email capture', { email: formData.email })
+
+      const response = await fetch('/api/leads', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          email: formData.email,
+          company: formData.company,
+          source: 'intake',
+          intakeData: aiTool && promptType ? {
+            aiTool,
+            promptType,
+            userThoughts: userThoughts || ''
+          } : undefined
+        })
+      })
+
+      const data = await response.json() as ICreateLeadResponse
+
+      if (!data.success || !data.leadId) {
+        throw new Error(data.error || 'Failed to save lead')
+      }
+
+      // Store leadId in localStorage
+      setStoredLeadId(data.leadId, formData.email)
+
+      // Update UI state
+      setCapturedEmail(formData.email)
+      setEmailCaptured(true)
+      setShowEmailModal(false)
+
+      logger.info('Email captured successfully', { leadId: data.leadId })
+    } catch (error) {
+      logger.error('Email capture failed', error)
+      throw error // Re-throw for modal to handle
+    }
+  }, [aiTool, promptType, userThoughts])
+
+  // Handle continue after thank you message
+  const handleThankYouContinue = useCallback(() => {
+    setEmailCaptured(false)
+  }, [])
+
   return (
     <div className="w-full max-w-3xl mx-auto">
+      {/* Email Capture Modal */}
+      <EmailCaptureModal
+        isOpen={showEmailModal}
+        onClose={() => setShowEmailModal(false)}
+        onSubmit={handleEmailSubmit}
+        trigger="intake"
+      />
+
+      {/* Thank You Message (shown after successful email capture) */}
+      {emailCaptured && (
+        <div className="mb-8">
+          <ThankYouMessage
+            email={capturedEmail}
+            onContinue={handleThankYouContinue}
+          />
+        </div>
+      )}
+
       {/* Header */}
       <div className="text-center mb-8">
         <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-optimi-green/10 mb-4">
