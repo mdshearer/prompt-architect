@@ -48,9 +48,12 @@ Help users structure their conversations for maximum clarity and effectiveness.`
 
 export async function POST(request: NextRequest) {
   try {
+    const { message, category, history, userEmail }: IChatRequest & { userEmail?: string } = await request.json()
+
     // Check rate limit before processing request
+    // If user has provided email, they get unlimited access
     const clientIP = getClientIP(request)
-    const rateLimit = await checkRateLimit(clientIP)
+    const rateLimit = await checkRateLimit(clientIP, userEmail)
 
     if (!rateLimit.allowed) {
       return NextResponse.json({
@@ -64,8 +67,6 @@ export async function POST(request: NextRequest) {
         }
       }, { status: 429 })
     }
-
-    const { message, category, history }: IChatRequest = await request.json()
 
     // Validate input before processing
     const messageValidation = validateMessage(message)

@@ -86,9 +86,13 @@ Focus on creating immediately actionable prompts they can copy and use right awa
 
 export async function POST(request: NextRequest) {
   try {
+    // Note: usage_count is sent by client but rate limiting is handled server-side
+    const { message, category, history, userEmail }: IEnhancedChatRequest & { userEmail?: string } = await request.json()
+
     // Check rate limit before processing request
+    // If user has provided email, they get unlimited access
     const clientIP = getClientIP(request)
-    const rateLimit = await checkRateLimit(clientIP)
+    const rateLimit = await checkRateLimit(clientIP, userEmail)
 
     if (!rateLimit.allowed) {
       return NextResponse.json({
@@ -102,9 +106,6 @@ export async function POST(request: NextRequest) {
         }
       }, { status: 429 })
     }
-
-    // Note: usage_count is sent by client but rate limiting is handled server-side
-    const { message, category, history }: IEnhancedChatRequest = await request.json()
 
     // Validate input before processing
     const messageValidation = validateMessage(message)

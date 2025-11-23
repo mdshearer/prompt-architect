@@ -17,7 +17,9 @@ import { useState, useEffect } from 'react'
 import { IntakeProvider, useIntake } from '@/components/onboarding/intake-context'
 import IntakeFlow from '@/components/onboarding/intake-flow'
 import ChatContainer from '@/components/chat/chat-container'
+import WelcomeBackBanner from '@/components/lead-capture/welcome-back-banner'
 import { getCookie } from '@/lib/cookie-manager'
+import { getStoredLeadData } from '@/lib/lead-storage'
 import { getAiToolDisplayName, getPromptTypeLabel } from '@/lib/intake-helpers'
 import type { IntakeCookie } from '@/types/intake'
 import type { PromptCategory } from '@/types/chat'
@@ -30,12 +32,19 @@ function HomeContent() {
   const { intakeCompleted, output, resetIntake, aiTool, promptType } = useIntake()
   const [showChat, setShowChat] = useState(false)
   const [existingSession, setExistingSession] = useState<IntakeCookie | null>(null)
+  const [returningUserEmail, setReturningUserEmail] = useState<string | null>(null)
 
-  // Check for existing session on mount
+  // Check for existing session and lead data on mount
   useEffect(() => {
     const cookie = getCookie()
     if (cookie && cookie.intakeCompleted) {
       setExistingSession(cookie)
+    }
+
+    // Check if user has captured email (returning user)
+    const leadData = getStoredLeadData()
+    if (leadData) {
+      setReturningUserEmail(leadData.email)
     }
   }, [])
 
@@ -158,6 +167,16 @@ function HomeContent() {
     <main className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
       <div className="container mx-auto px-4 py-8">
         <HeroSection />
+
+        {/* Welcome back banner for returning users */}
+        {returningUserEmail && (
+          <div className="max-w-4xl mx-auto mb-6">
+            <WelcomeBackBanner
+              email={returningUserEmail}
+              onContinue={() => setShowChat(true)}
+            />
+          </div>
+        )}
 
         <div className="max-w-4xl mx-auto bg-white rounded-xl shadow-lg overflow-hidden border border-gray-100">
           <IntakeFlow />

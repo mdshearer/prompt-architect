@@ -5,6 +5,7 @@ import MessageList from './message-list'
 import InputArea from './input-area'
 import ChatHeader from './chat-header'
 import { MAX_FREE_MESSAGES, CONVERSATION_CONTEXT_LIMIT_ENHANCED, API_TIMEOUT_MS } from '@/lib/constants'
+import { getStoredEmail } from '@/lib/lead-storage'
 import type { IMessage, IUIElements, PromptCategory } from '@/types/chat'
 
 interface IChatContainerProps {
@@ -16,7 +17,16 @@ export default function ChatContainer({ category, onClose }: IChatContainerProps
   const [messages, setMessages] = useState<IMessage[]>([])
   const [isLoading, setIsLoading] = useState(false)
   const [usageCount, setUsageCount] = useState(0)
+  const [hasUnlimitedAccess, setHasUnlimitedAccess] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
+
+  // Check if user has email stored (unlimited access)
+  useEffect(() => {
+    const email = getStoredEmail()
+    if (email) {
+      setHasUnlimitedAccess(true)
+    }
+  }, [])
 
   useEffect(() => {
     // Add sophisticated welcome message with educational context
@@ -99,13 +109,17 @@ export default function ChatContainer({ category, onClose }: IChatContainerProps
   const handleSendMessage = async (content: string) => {
     if (!content.trim() || isLoading) return
 
-    if (usageCount >= MAX_FREE_MESSAGES) {
+    // Only check usage limit if user doesn't have unlimited access
+    if (!hasUnlimitedAccess && usageCount >= MAX_FREE_MESSAGES) {
       // Show upgrade prompt
       return
     }
 
     // Increment counter optimistically to prevent race condition on rapid clicks
-    setUsageCount(prev => prev + 1)
+    // (only if not unlimited)
+    if (!hasUnlimitedAccess) {
+      setUsageCount(prev => prev + 1)
+    }
 
     const userMessage: IMessage = {
       id: crypto.randomUUID(),
@@ -128,6 +142,9 @@ export default function ChatContainer({ category, onClose }: IChatContainerProps
     )
 
     try {
+      // Get user email if stored (for unlimited access)
+      const userEmail = getStoredEmail()
+
       // Create AbortController for request timeout
       const abortController = new AbortController()
       const timeoutId = setTimeout(() => abortController.abort(), API_TIMEOUT_MS)
@@ -139,7 +156,8 @@ export default function ChatContainer({ category, onClose }: IChatContainerProps
           message: content.trim(),
           category,
           history: messages.slice(-CONVERSATION_CONTEXT_LIMIT_ENHANCED), // Last N messages for context
-          usage_count: usageCount
+          usage_count: usageCount,
+          userEmail: userEmail || undefined // Pass email if available for unlimited access
         }),
         signal: abortController.signal
       })
@@ -162,8 +180,10 @@ export default function ChatContainer({ category, onClose }: IChatContainerProps
         throw new Error(data.error || 'Failed to get response')
       }
     } catch (error) {
-      // Decrement counter since API call failed
-      setUsageCount(prev => prev - 1)
+      // Decrement counter since API call failed (only if not unlimited)
+      if (!hasUnlimitedAccess) {
+        setUsageCount(prev => prev - 1)
+      }
 
       // Provide specific error message for timeouts
       let errorContent = 'A technical error occurred while processing your request. Please try again, and I will assist you in developing your prompt.'
@@ -187,26 +207,28 @@ export default function ChatContainer({ category, onClose }: IChatContainerProps
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
       <div className="bg-white rounded-xl w-full max-w-6xl h-[85vh] flex flex-col shadow-2xl">
-        <ChatHeader 
-          category={category} 
+        <ChatHeader
+          category={category}
           usageCount={usageCount}
           maxUsage={MAX_FREE_MESSAGES}
           onClose={onClose}
+          hasUnlimitedAccess={hasUnlimitedAccess}
         />
-        
-        <MessageList 
+
+        <MessageList
           messages={messages}
           isLoading={isLoading}
           category={category}
           messagesEndRef={messagesEndRef}
           onPromptGenerated={handlePromptGenerated}
         />
-        
+
         <InputArea
           onSendMessage={handleSendMessage}
-          disabled={isLoading || usageCount >= MAX_FREE_MESSAGES}
+          disabled={isLoading || (!hasUnlimitedAccess && usageCount >= MAX_FREE_MESSAGES)}
           usageCount={usageCount}
           maxUsage={MAX_FREE_MESSAGES}
+          hasUnlimitedAccess={hasUnlimitedAccess}
         />
       </div>
     </div>

@@ -9,9 +9,10 @@ interface IChatHeaderProps {
   usageCount: number
   maxUsage: number
   onClose: () => void
+  hasUnlimitedAccess?: boolean
 }
 
-export default function ChatHeader({ category, usageCount, maxUsage, onClose }: IChatHeaderProps) {
+export default function ChatHeader({ category, usageCount, maxUsage, onClose, hasUnlimitedAccess = false }: IChatHeaderProps) {
   // Memoize category info to prevent recalculation on every render
   const info = useMemo(() => {
     switch (category) {
@@ -54,24 +55,35 @@ export default function ChatHeader({ category, usageCount, maxUsage, onClose }: 
           </div>
           
           <div className="mt-4 flex items-center justify-between">
-            <div className="flex items-center space-x-4 text-sm opacity-90">
-              <span>Progress: {usageCount}/{maxUsage} free conversations</span>
-              <div className="flex space-x-1">
-                {Array.from({ length: maxUsage }, (_, i) => (
-                  <div
-                    key={i}
-                    className={`w-2 h-2 rounded-full ${
-                      i < usageCount ? 'bg-white' : 'bg-white bg-opacity-30'
-                    }`}
-                  />
-                ))}
+            {hasUnlimitedAccess ? (
+              <div className="flex items-center space-x-2">
+                <div className="text-sm bg-white bg-opacity-20 px-3 py-1.5 rounded-full font-medium flex items-center space-x-2">
+                  <Sparkles className="w-4 h-4" />
+                  <span>Unlimited Access</span>
+                </div>
               </div>
-            </div>
-            
-            {usageCount >= maxUsage && (
-              <div className="text-xs bg-optimi-yellow/20 text-gray-800 px-3 py-1 rounded-full font-medium">
-                Upgrade for additional sessions + advanced features
-              </div>
+            ) : (
+              <>
+                <div className="flex items-center space-x-4 text-sm opacity-90">
+                  <span>Progress: {usageCount}/{maxUsage} free conversations</span>
+                  <div className="flex space-x-1">
+                    {Array.from({ length: maxUsage }, (_, i) => (
+                      <div
+                        key={i}
+                        className={`w-2 h-2 rounded-full ${
+                          i < usageCount ? 'bg-white' : 'bg-white bg-opacity-30'
+                        }`}
+                      />
+                    ))}
+                  </div>
+                </div>
+
+                {usageCount >= maxUsage && (
+                  <div className="text-xs bg-optimi-yellow/20 text-gray-800 px-3 py-1 rounded-full font-medium">
+                    Upgrade for additional sessions + advanced features
+                  </div>
+                )}
+              </>
             )}
           </div>
         </div>
