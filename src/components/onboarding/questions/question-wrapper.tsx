@@ -93,9 +93,9 @@ export default function QuestionWrapper({
             font-semibold transition-all duration-200
             ${!canGoNext || isLoading
               ? 'bg-gray-400 text-gray-200 cursor-not-allowed opacity-60'
-              : 'bg-optimi-primary text-white hover:bg-optimi-primary/90 hover:shadow-lg shadow-md'
+              : 'bg-optimi-yellow text-optimi-primary hover:bg-optimi-yellow/90 hover:shadow-lg shadow-md'
             }
-            focus:outline-none focus:ring-2 focus:ring-optimi-primary focus:ring-offset-2
+            focus:outline-none focus:ring-2 focus:ring-optimi-yellow focus:ring-offset-2
           `}
         >
           Next
