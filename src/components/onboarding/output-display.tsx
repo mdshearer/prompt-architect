@@ -42,7 +42,7 @@ import {
  * <OutputDisplay />
  */
 export default function OutputDisplay() {
-  const { output, aiTool, promptType, resetIntake, userThoughts } = useIntake()
+  const { output, aiTool, promptType, resetIntake, guidedQuestions } = useIntake()
   const [section1Expanded, setSection1Expanded] = useState(true)
   const [copiedSection, setCopiedSection] = useState<'section1' | 'section2' | null>(null)
   const [copyError, setCopyError] = useState<string | null>(null)
@@ -148,7 +148,7 @@ export default function OutputDisplay() {
           intakeData: aiTool && promptType ? {
             aiTool,
             promptType,
-            userThoughts: userThoughts || ''
+            guidedQuestions: guidedQuestions || {}
           } : undefined
         })
       })
@@ -172,7 +172,7 @@ export default function OutputDisplay() {
       logger.error('Email capture failed', error)
       throw error // Re-throw for modal to handle
     }
-  }, [aiTool, promptType, userThoughts])
+  }, [aiTool, promptType, guidedQuestions])
 
   // Handle continue after thank you message
   const handleThankYouContinue = useCallback(() => {
