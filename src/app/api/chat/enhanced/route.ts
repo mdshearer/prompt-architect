@@ -1,21 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { together } from '@/lib/together'
-
-interface Message {
-  id: string
-  content: string
-  role: 'user' | 'assistant'
-  timestamp: Date
-  status?: 'sending' | 'sent' | 'error'
-  ui_elements?: any
-}
-
-interface EnhancedChatRequest {
-  message: string
-  category: 'custom_instructions' | 'projects_gems' | 'threads'
-  history: Message[]
-  usage_count: number
-}
+import { getClientIP, checkRateLimit, incrementRateLimit } from '@/lib/rate-limiter'
+import { validateMessage, validateHistory } from '@/lib/input-validation'
+import { logger } from '@/lib/logger'
+import {
+  CONVERSATION_CONTEXT_LIMIT_ENHANCED,
+  AI_MAX_TOKENS_ENHANCED,
+  AI_TEMPERATURE_ENHANCED,
+  AI_TOP_P_ENHANCED
+} from '@/lib/constants'
+import type { IUIElements, IEnhancedChatRequest, PromptCategory } from '@/types/chat'
 
 const ENHANCED_SYSTEM_PROMPTS = {
   custom_instructions: `You are an expert prompt engineering coach specializing in Custom Instructions for ChatGPT and Claude. Your role is to guide users through building powerful, persistent behavioral guidelines.
@@ -90,30 +84,54 @@ EDUCATIONAL FRAMEWORK:
 Focus on creating immediately actionable prompts they can copy and use right away. Emphasize the universal nature - works on ChatGPT, Claude, Gemini, Copilot, etc.`
 }
 
-const CONVERSATION_STARTERS = {
-  custom_instructions: {
-    role_discovery: "Tell me about your role and the kind of AI assistance you need most often. Are you a manager making decisions, a creator producing content, an analyst working with data, or something else?",
-    frustration_discovery: "What frustrates you most about your current AI interactions? Do you find yourself repeating the same context over and over?",
-    outcome_focus: "What would 'perfect' AI assistance look like for your daily work? What would change if AI truly understood how you work?"
-  },
-  projects_gems: {
-    expertise_discovery: "What specific area of expertise would be most valuable to have on-demand? Think of it like hiring a specialist consultant.",
-    domain_focus: "In your ideal scenario, what would this AI expert know deeply about your industry, role, or specific challenges?",
-    integration_discovery: "How do you envision using this specialized assistant in your regular workflow? Daily decisions, weekly analysis, project planning?"
-  },
-  threads: {
-    task_discovery: "What specific task or challenge brings you here? I'll help you create a prompt that gets exactly what you need, every time.",
-    context_gathering: "Tell me more about the context around this task. Who are you, what's the situation, and what constraints do you face?",
-    outcome_clarification: "How will you know when this prompt is working perfectly? What does success look like?"
-  }
-}
-
 export async function POST(request: NextRequest) {
   try {
-    const { message, category, history, usage_count }: EnhancedChatRequest = await request.json()
+    // Note: usage_count is sent by client but rate limiting is handled server-side
+    const { message, category, history, userEmail }: IEnhancedChatRequest & { userEmail?: string } = await request.json()
+
+    // Check rate limit before processing request
+    // If user has provided email, they get unlimited access
+    const clientIP = getClientIP(request)
+    const rateLimit = await checkRateLimit(clientIP, userEmail)
+
+    if (!rateLimit.allowed) {
+      return NextResponse.json({
+        success: false,
+        error: 'Rate limit exceeded',
+        message: `You've used your ${rateLimit.limit} free messages. Please sign up to continue.`,
+        rateLimitInfo: {
+          currentCount: rateLimit.currentCount,
+          limit: rateLimit.limit,
+          resetsAt: rateLimit.resetsAt
+        }
+      }, { status: 429 })
+    }
+
+    // Validate input before processing
+    const messageValidation = validateMessage(message)
+    if (!messageValidation.isValid) {
+      return NextResponse.json({
+        success: false,
+        error: messageValidation.error,
+        errorCode: messageValidation.errorCode
+      }, { status: 400 })
+    }
+
+    // Validate conversation history
+    const historyValidation = validateHistory(history)
+    if (!historyValidation.isValid) {
+      return NextResponse.json({
+        success: false,
+        error: historyValidation.error
+      }, { status: 400 })
+    }
+
+    // Use sanitized message for API call
+    // Safe to assert: sanitizedMessage is guaranteed to exist when isValid is true
+    const sanitizedMessage = messageValidation.sanitizedMessage as string
 
     // Determine conversation stage and appropriate response strategy
-    const conversationHistory = history.slice(-8)
+    const conversationHistory = history.slice(-CONVERSATION_CONTEXT_LIMIT_ENHANCED)
     const isEarlyConversation = conversationHistory.length <= 2
     
     // Build enhanced context with educational guidance
@@ -125,15 +143,15 @@ export async function POST(request: NextRequest) {
         role: msg.role as 'user' | 'assistant',
         content: msg.content
       })),
-      { role: 'user' as const, content: message }
+      { role: 'user' as const, content: sanitizedMessage }
     ]
 
     const completion = await together.chat.completions.create({
       model: 'meta-llama/Llama-3.3-70B-Instruct-Turbo',
       messages,
-      max_tokens: 600,
-      temperature: 0.8,
-      top_p: 0.9,
+      max_tokens: AI_MAX_TOKENS_ENHANCED,
+      temperature: AI_TEMPERATURE_ENHANCED,
+      top_p: AI_TOP_P_ENHANCED,
     })
 
     let response = completion.choices[0]?.message?.content?.trim()
@@ -143,7 +161,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Enhance response with contextual UI elements
-    const ui_elements: any = {}
+    const ui_elements: IUIElements = {}
 
     // Add educational content markers
     if (isEarlyConversation) {
@@ -174,6 +192,9 @@ export async function POST(request: NextRequest) {
       }
     }
 
+    // Increment rate limit counter after successful request
+    incrementRateLimit(clientIP)
+
     return NextResponse.json({
       success: true,
       message: response,
@@ -182,7 +203,7 @@ export async function POST(request: NextRequest) {
     })
 
   } catch (error) {
-    console.error('Enhanced chat API error:', error)
+    logger.error('Enhanced chat API error', error)
     return NextResponse.json({
       success: false,
       error: error instanceof Error ? error.message : 'Unknown error',

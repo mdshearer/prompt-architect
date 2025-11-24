@@ -1,18 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { together } from '@/lib/together'
-
-interface Message {
-  id: string
-  content: string
-  role: 'user' | 'assistant'
-  timestamp: Date
-}
-
-interface ChatRequest {
-  message: string
-  category: 'custom_instructions' | 'projects_gems' | 'threads'
-  history: Message[]
-}
+import { getClientIP, checkRateLimit, incrementRateLimit } from '@/lib/rate-limiter'
+import { validateMessage, validateHistory } from '@/lib/input-validation'
+import { logger } from '@/lib/logger'
+import {
+  CONVERSATION_CONTEXT_LIMIT_STANDARD,
+  AI_MAX_TOKENS_STANDARD,
+  AI_TEMPERATURE_STANDARD,
+  AI_TOP_P_STANDARD
+} from '@/lib/constants'
+import type { IMessage, IChatRequest, PromptCategory } from '@/types/chat'
 
 const SYSTEM_PROMPTS = {
   custom_instructions: `You are an expert AI prompt engineer specializing in custom instructions optimization. Your goal is to help users create powerful, clear, and effective custom instructions for AI systems.
@@ -51,25 +48,66 @@ Help users structure their conversations for maximum clarity and effectiveness.`
 
 export async function POST(request: NextRequest) {
   try {
-    const { message, category, history }: ChatRequest = await request.json()
+    const { message, category, history, userEmail }: IChatRequest & { userEmail?: string } = await request.json()
+
+    // Check rate limit before processing request
+    // If user has provided email, they get unlimited access
+    const clientIP = getClientIP(request)
+    const rateLimit = await checkRateLimit(clientIP, userEmail)
+
+    if (!rateLimit.allowed) {
+      return NextResponse.json({
+        success: false,
+        error: 'Rate limit exceeded',
+        message: `You've used your ${rateLimit.limit} free messages. Please sign up to continue.`,
+        rateLimitInfo: {
+          currentCount: rateLimit.currentCount,
+          limit: rateLimit.limit,
+          resetsAt: rateLimit.resetsAt
+        }
+      }, { status: 429 })
+    }
+
+    // Validate input before processing
+    const messageValidation = validateMessage(message)
+    if (!messageValidation.isValid) {
+      return NextResponse.json({
+        success: false,
+        error: messageValidation.error,
+        errorCode: messageValidation.errorCode
+      }, { status: 400 })
+    }
+
+    // Validate conversation history
+    const historyValidation = validateHistory(history)
+    if (!historyValidation.isValid) {
+      return NextResponse.json({
+        success: false,
+        error: historyValidation.error
+      }, { status: 400 })
+    }
+
+    // Use sanitized message for API call
+    // Safe to assert: sanitizedMessage is guaranteed to exist when isValid is true
+    const sanitizedMessage = messageValidation.sanitizedMessage as string
 
     // Build conversation context
-    const conversationHistory = history.slice(-6) // Keep last 6 messages for context
+    const conversationHistory = history.slice(-CONVERSATION_CONTEXT_LIMIT_STANDARD) // Keep last N messages for context
     const messages = [
       { role: 'system' as const, content: SYSTEM_PROMPTS[category] },
       ...conversationHistory.map(msg => ({
         role: msg.role as 'user' | 'assistant',
         content: msg.content
       })),
-      { role: 'user' as const, content: message }
+      { role: 'user' as const, content: sanitizedMessage }
     ]
 
     const completion = await together.chat.completions.create({
       model: 'meta-llama/Llama-3.3-70B-Instruct-Turbo',
       messages,
-      max_tokens: 500,
-      temperature: 0.7,
-      top_p: 0.9,
+      max_tokens: AI_MAX_TOKENS_STANDARD,
+      temperature: AI_TEMPERATURE_STANDARD,
+      top_p: AI_TOP_P_STANDARD,
     })
 
     const response = completion.choices[0]?.message?.content
@@ -78,13 +116,16 @@ export async function POST(request: NextRequest) {
       throw new Error('No response from AI')
     }
 
+    // Increment rate limit counter after successful request
+    incrementRateLimit(clientIP)
+
     return NextResponse.json({
       success: true,
       response: response.trim()
     })
 
   } catch (error) {
-    console.error('Chat API error:', error)
+    logger.error('Chat API error', error)
     return NextResponse.json({
       success: false,
       error: error instanceof Error ? error.message : 'Unknown error'
