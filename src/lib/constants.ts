@@ -30,11 +30,22 @@ export const MAX_MESSAGE_LENGTH = 2000
 // Onboarding Intake Flow Constants
 // =============================================================================
 
-// Intake Input Validation
+// Guided Questions - Character Limits
+export const INTAKE_ROLE_MIN_CHARS = 50
+export const INTAKE_ROLE_MAX_CHARS = 200
+export const INTAKE_GOAL_MIN_CHARS = 50
+export const INTAKE_GOAL_MAX_CHARS = 200
+export const INTAKE_CONSTRAINTS_MAX_CHARS = 150
+
+/**
+ * @deprecated - Replaced by guided questions flow
+ * Keeping for backwards compatibility during transition
+ */
 export const MAX_INTAKE_THOUGHTS_LENGTH = 500
 export const MIN_INTAKE_THOUGHTS_LENGTH = 20
 
 /**
+ * @deprecated - Replaced by question-specific placeholders in intake-questions.ts
  * Placeholder text for the initial thoughts textarea
  * Changes based on selected prompt type to provide contextually relevant examples
  */
@@ -44,6 +55,7 @@ export const INTAKE_PLACEHOLDERS = {
 } as const
 
 /**
+ * @deprecated - Replaced by question-specific titles in intake-questions.ts
  * Label text for the initial thoughts input field
  * Changes based on selected prompt type to guide user input appropriately
  */

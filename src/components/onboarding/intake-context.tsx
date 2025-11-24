@@ -27,7 +27,8 @@ import type {
   AiTool,
   PromptType,
   IntakeCookie,
-  FormattedOutput
+  FormattedOutput,
+  GuidedQuestions
 } from '@/types/intake'
 import {
   getCookie,
@@ -41,14 +42,14 @@ import { logger } from '@/lib/logger'
  * Current state of the intake flow
  */
 export interface IntakeState {
-  /** Current step in the flow (1 = AI tool, 2 = prompt type, 3 = initial thoughts) */
-  step: 1 | 2 | 3
+  /** Current step in the flow (1 = AI tool, 2 = prompt type, 3-8 = questions, 9 = review) */
+  step: number
   /** Selected AI tool (null if not yet selected) */
   aiTool: AiTool | null
   /** Selected prompt type (null if not yet selected) */
   promptType: PromptType | null
-  /** User's initial thoughts input */
-  userThoughts: string
+  /** Guided questions responses */
+  guidedQuestions: Partial<GuidedQuestions>
   /** Whether an API call is in progress */
   isLoading: boolean
   /** Error message from last operation */
@@ -69,10 +70,10 @@ export interface IntakeContextType extends IntakeState {
   setAiTool: (tool: AiTool) => void
   /** Set the selected prompt type */
   setPromptType: (type: PromptType) => void
-  /** Update the user's thoughts input */
-  setUserThoughts: (thoughts: string) => void
+  /** Update guided questions responses */
+  setGuidedQuestions: (questions: Partial<GuidedQuestions>) => void
   /** Navigate to a specific step */
-  goToStep: (step: 1 | 2 | 3) => void
+  goToStep: (step: number) => void
   /** Submit the intake form and generate output */
   submitIntake: () => Promise<void>
   /** Reset the entire intake flow */
@@ -91,7 +92,7 @@ const initialState: IntakeState = {
   step: 1,
   aiTool: null,
   promptType: null,
-  userThoughts: '',
+  guidedQuestions: {},
   isLoading: false,
   error: null,
   output: null,
@@ -187,22 +188,22 @@ export function IntakeProvider({ children }: IntakeProviderProps) {
   }, [updateCookie])
 
   /**
-   * Update the user's thoughts input (no cookie update for privacy)
+   * Update guided questions responses (no cookie update for privacy)
    */
-  const setUserThoughts = useCallback((thoughts: string) => {
+  const setGuidedQuestions = useCallback((questions: Partial<GuidedQuestions>) => {
     setState(prev => ({
       ...prev,
-      userThoughts: thoughts,
-      error: null // Clear any validation errors as user types
+      guidedQuestions: questions,
+      error: null // Clear any validation errors as user updates
     }))
   }, [])
 
   /**
    * Navigate to a specific step (supports back navigation)
    */
-  const goToStep = useCallback((step: 1 | 2 | 3) => {
-    // Validate step number
-    if (![1, 2, 3].includes(step)) {
+  const goToStep = useCallback((step: number) => {
+    // Validate step number (1-10: tool, type, 6 questions, review)
+    if (step < 1 || step > 10) {
       logger.warn('Invalid step number', { step })
       return
     }
@@ -219,7 +220,7 @@ export function IntakeProvider({ children }: IntakeProviderProps) {
    * Submit the intake form and call the API
    */
   const submitIntake = useCallback(async () => {
-    const { aiTool, promptType, userThoughts } = state
+    const { aiTool, promptType, guidedQuestions } = state
 
     // Validate all required fields
     if (!aiTool || !promptType) {
@@ -230,10 +231,14 @@ export function IntakeProvider({ children }: IntakeProviderProps) {
       return
     }
 
-    if (!userThoughts || userThoughts.trim().length < 20) {
+    // Validate required questions are answered
+    const requiredFields: (keyof GuidedQuestions)[] = ['role', 'goal', 'tasks', 'tone', 'outputDetail']
+    const missingFields = requiredFields.filter(field => !guidedQuestions[field])
+
+    if (missingFields.length > 0) {
       setState(prev => ({
         ...prev,
-        error: 'Please enter at least 20 characters'
+        error: 'Please answer all required questions before generating'
       }))
       return
     }
@@ -248,7 +253,7 @@ export function IntakeProvider({ children }: IntakeProviderProps) {
         body: JSON.stringify({
           aiTool,
           promptType,
-          userThoughts: userThoughts.trim()
+          guidedQuestions: guidedQuestions as GuidedQuestions
         })
       })
 
@@ -313,7 +318,7 @@ export function IntakeProvider({ children }: IntakeProviderProps) {
     ...state,
     setAiTool,
     setPromptType,
-    setUserThoughts,
+    setGuidedQuestions,
     goToStep,
     submitIntake,
     resetIntake,

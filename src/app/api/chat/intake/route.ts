@@ -19,10 +19,10 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { together } from '@/lib/together'
 import { getClientIP, checkRateLimit, incrementRateLimit } from '@/lib/rate-limiter'
-import { validateIntakeInput } from '@/lib/input-validation'
 import { logger } from '@/lib/logger'
 import { loadInstructions, buildSystemPrompt } from '@/lib/intake-instructions'
 import { formatOutput } from '@/lib/output-formatter'
+import { buildUserContext } from '@/lib/intake-helpers'
 import {
   AI_MAX_TOKENS_ENHANCED,
   AI_TEMPERATURE_ENHANCED,
@@ -33,7 +33,8 @@ import type {
   IntakeAPIRequest,
   IntakeAPIResponse,
   AiTool,
-  PromptType
+  PromptType,
+  GuidedQuestions
 } from '@/types/intake'
 
 /**
@@ -80,13 +81,13 @@ export async function POST(request: NextRequest): Promise<NextResponse<IntakeAPI
       }, { status: 400 })
     }
 
-    const { aiTool, promptType, userThoughts } = body
+    const { aiTool, promptType, guidedQuestions } = body
 
     // Validate required fields are present
-    if (!aiTool || !promptType || !userThoughts) {
+    if (!aiTool || !promptType || !guidedQuestions) {
       return NextResponse.json({
         success: false,
-        error: 'Missing required fields: aiTool, promptType, and userThoughts are required'
+        error: 'Missing required fields: aiTool, promptType, and guidedQuestions are required'
       }, { status: 400 })
     }
 
@@ -106,17 +107,19 @@ export async function POST(request: NextRequest): Promise<NextResponse<IntakeAPI
       }, { status: 400 })
     }
 
-    // Validate and sanitize user thoughts (20-500 characters)
-    const validation = validateIntakeInput(userThoughts)
-    if (!validation.valid) {
+    // Validate required guided questions are present
+    const requiredFields: (keyof GuidedQuestions)[] = ['role', 'goal', 'tasks', 'tone', 'outputDetail']
+    const missingFields = requiredFields.filter(field => !guidedQuestions[field])
+
+    if (missingFields.length > 0) {
       return NextResponse.json({
         success: false,
-        error: validation.error || 'Invalid input'
+        error: `Missing required questions: ${missingFields.join(', ')}`
       }, { status: 400 })
     }
 
-    // Use sanitized input
-    const sanitizedThoughts = validation.sanitizedInput as string
+    // Build user context from guided questions
+    const userContext = buildUserContext(guidedQuestions)
 
     // Load AI tool + prompt type specific instructions
     let instructions
@@ -131,7 +134,7 @@ export async function POST(request: NextRequest): Promise<NextResponse<IntakeAPI
     }
 
     // Build the system prompt
-    const systemPrompt = buildSystemPrompt(instructions, sanitizedThoughts, aiTool, promptType)
+    const systemPrompt = buildSystemPrompt(instructions, userContext, aiTool, promptType)
 
     // Call Together.ai API
     let completion
@@ -176,7 +179,7 @@ export async function POST(request: NextRequest): Promise<NextResponse<IntakeAPI
     // Format the output (includes Section 1 for Prompt Architect)
     let formattedOutput
     try {
-      formattedOutput = await formatOutput(aiResponse, promptType, aiTool, sanitizedThoughts)
+      formattedOutput = await formatOutput(aiResponse, promptType, aiTool, userContext)
     } catch (error) {
       logger.warn('Output formatting error, returning raw response', error)
       formattedOutput = {

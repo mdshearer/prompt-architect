@@ -8,9 +8,10 @@
  * @module intake-helpers
  */
 
-import type { AiTool, PromptType } from '@/types/intake'
+import type { AiTool, PromptType, GuidedQuestions } from '@/types/intake'
 import { PROMPT_TYPES } from '@/types/intake'
 import { INTAKE_PLACEHOLDERS, INTAKE_LABELS } from '@/lib/constants'
+import { TASK_LABELS, TONE_LABELS, OUTPUT_LABELS } from './intake-questions'
 
 /**
  * Returns the appropriate placeholder text for the initial thoughts textarea
@@ -386,4 +387,72 @@ export function validateCharacterCount(
     }
   }
   return { valid: true }
+}
+
+/**
+ * Builds a natural language context string from guided questions
+ *
+ * Converts the structured GuidedQuestions data into a formatted string
+ * that can be used as context for the AI API.
+ *
+ * @param questions - The guided questions responses
+ * @returns Formatted context string for AI consumption
+ *
+ * @example
+ * const context = buildUserContext({
+ *   role: 'Digital marketing manager at SaaS company',
+ *   goal: 'Create better ad copy',
+ *   tasks: ['writing', 'analysis'],
+ *   tone: 'professional',
+ *   outputDetail: 'balanced'
+ * })
+ * // Returns:
+ * // ROLE/CONTEXT: Digital marketing manager at SaaS company
+ * //
+ * // PRIMARY GOAL: Create better ad copy
+ * //
+ * // SPECIFIC TASKS: Writing & Content Creation, Analysis & Problem Solving
+ * //
+ * // PREFERRED TONE: Professional
+ * //
+ * // RESPONSE DETAIL LEVEL: Balanced
+ */
+export function buildUserContext(questions: GuidedQuestions): string {
+  const parts: string[] = []
+
+  // Role
+  if (questions.role) {
+    parts.push(`ROLE/CONTEXT: ${questions.role}`)
+  }
+
+  // Goal
+  if (questions.goal) {
+    parts.push(`PRIMARY GOAL: ${questions.goal}`)
+  }
+
+  // Tasks
+  if (questions.tasks && questions.tasks.length > 0) {
+    const taskLabels = questions.tasks.map(t => TASK_LABELS[t]).join(', ')
+    parts.push(`SPECIFIC TASKS: ${taskLabels}`)
+    if (questions.tasksOther) {
+      parts.push(`OTHER TASKS: ${questions.tasksOther}`)
+    }
+  }
+
+  // Tone
+  if (questions.tone) {
+    parts.push(`PREFERRED TONE: ${TONE_LABELS[questions.tone]}`)
+  }
+
+  // Constraints
+  if (questions.constraints) {
+    parts.push(`CONSTRAINTS/AVOID: ${questions.constraints}`)
+  }
+
+  // Output detail
+  if (questions.outputDetail) {
+    parts.push(`RESPONSE DETAIL LEVEL: ${OUTPUT_LABELS[questions.outputDetail]}`)
+  }
+
+  return parts.join('\n\n')
 }
