@@ -224,13 +224,13 @@ export default function IntakeReview() {
           onClick={handleSubmit}
           disabled={isLoading}
           className={`
-            inline-flex items-center gap-2 px-8 py-3 rounded-xl
-            font-semibold transition-all duration-200
+            inline-flex items-center gap-2 px-8 py-4 rounded-xl
+            font-bold text-base transition-all duration-200 shadow-lg
             ${isLoading
-              ? 'bg-gray-400 text-gray-200 cursor-not-allowed opacity-60'
-              : 'bg-optimi-primary text-white hover:bg-optimi-primary/90 hover:shadow-lg shadow-md'
+              ? 'bg-gray-300 cursor-not-allowed text-gray-500'
+              : 'bg-gradient-to-r from-[#FFDC00] to-[#00C896] text-[#283791] hover:shadow-xl hover:shadow-[#00C896]/50 hover:scale-105'
             }
-            focus:outline-none focus:ring-2 focus:ring-optimi-primary focus:ring-offset-2
+            focus:outline-none focus:ring-2 focus:ring-[#FFDC00] focus:ring-offset-2
           `}
         >
           {isLoading ? (
