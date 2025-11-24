@@ -47,18 +47,18 @@ export default function IntakeProgressIndicator() {
             {/* Step circle */}
             <div
               className={`
-                flex items-center justify-center w-10 h-10 rounded-full
-                text-sm font-medium transition-all duration-200
+                flex items-center justify-center w-12 h-12 rounded-full
+                text-lg font-bold transition-all duration-200 shadow-md
                 ${stepNum < step
-                  ? 'bg-optimi-green text-white'
+                  ? 'bg-[#00C896] text-white'
                   : stepNum === step
-                    ? 'bg-optimi-primary text-white'
-                    : 'bg-gray-200 text-gray-500'
+                    ? 'bg-[#FFDC00] text-[#283791] scale-110'
+                    : 'bg-gray-300 text-gray-600'
                 }
               `}
             >
               {stepNum < step ? (
-                <Check className="w-5 h-5" />
+                <Check className="w-6 h-6" />
               ) : (
                 stepNum
               )}

@@ -252,12 +252,12 @@ function HeroSection({ showCta = false, onCtaClick }: { showCta?: boolean; onCta
 
       {/* Supported Tools */}
       <div className="mt-12 pt-8 border-t border-[#0078FF]/30">
-        <p className="text-sm text-white/60 mb-4 font-medium">Works with all major AI tools</p>
+        <p className="text-sm text-white/60 mb-4 font-medium">Works with these major AI tools</p>
         <div className="flex items-center justify-center gap-8 flex-wrap">
           {SUPPORTED_TOOLS.map((tool) => (
-            <div key={tool.name} className="flex items-center gap-2 text-white/80 bg-white/10 px-4 py-2 rounded-lg backdrop-blur hover:bg-white/15 transition-colors">
-              <tool.icon className={`w-5 h-5 ${tool.color}`} />
-              <span className="font-medium">{tool.name}</span>
+            <div key={tool.name} className="flex flex-col items-center gap-2">
+              <img src={`/logos/${tool.name.toLowerCase()}.png`} alt={tool.name} className="w-12 h-12 object-contain" />
+              <span className="text-white/80 text-sm font-medium">{tool.name}</span>
             </div>
           ))}
         </div>
