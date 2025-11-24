@@ -225,10 +225,7 @@ function HeroSection() {
     <header className="text-center mb-10">
       {/* Main Tagline - Bold and Simple */}
       <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-white tracking-tight">
-        Stop Guessing.{' '}
-        <span className="text-white">
-          Start Architecting.
-        </span>
+        Stop Guessing. Start Architecting.
       </h1>
     </header>
   )
