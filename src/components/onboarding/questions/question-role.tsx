@@ -16,7 +16,7 @@ import { QUESTION_CONFIGS } from '@/lib/intake-questions'
 import { INTAKE_ROLE_MIN_CHARS, INTAKE_ROLE_MAX_CHARS } from '@/lib/constants'
 
 export default function QuestionRole() {
-  const { guidedQuestions, setGuidedQuestions, goToStep } = useIntake()
+  const { step, guidedQuestions, setGuidedQuestions, goToStep } = useIntake()
   const [value, setValue] = useState(guidedQuestions?.role || '')
 
   const config = QUESTION_CONFIGS.role
@@ -33,17 +33,17 @@ export default function QuestionRole() {
   const handleNext = useCallback(() => {
     if (isValid) {
       setGuidedQuestions({ ...guidedQuestions, role: value.trim() })
-      goToStep(config.step + 1)
+      goToStep(step + 1)
     }
-  }, [isValid, value, guidedQuestions, setGuidedQuestions, goToStep, config.step])
+  }, [isValid, value, step, guidedQuestions, setGuidedQuestions, goToStep])
 
   const handleBack = useCallback(() => {
     // Save current value before going back
     if (value.trim()) {
       setGuidedQuestions({ ...guidedQuestions, role: value.trim() })
     }
-    goToStep(config.step - 1)
-  }, [value, guidedQuestions, setGuidedQuestions, goToStep, config.step])
+    goToStep(step - 1)
+  }, [value, step, guidedQuestions, setGuidedQuestions, goToStep])
 
   return (
     <QuestionWrapper

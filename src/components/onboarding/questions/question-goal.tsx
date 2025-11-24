@@ -16,7 +16,7 @@ import { QUESTION_CONFIGS } from '@/lib/intake-questions'
 import { INTAKE_GOAL_MIN_CHARS, INTAKE_GOAL_MAX_CHARS } from '@/lib/constants'
 
 export default function QuestionGoal() {
-  const { guidedQuestions, setGuidedQuestions, goToStep } = useIntake()
+  const { step, guidedQuestions, setGuidedQuestions, goToStep } = useIntake()
   const [value, setValue] = useState(guidedQuestions?.goal || '')
 
   const config = QUESTION_CONFIGS.goal
@@ -33,17 +33,17 @@ export default function QuestionGoal() {
   const handleNext = useCallback(() => {
     if (isValid) {
       setGuidedQuestions({ ...guidedQuestions, goal: value.trim() })
-      goToStep(config.step + 1)
+      goToStep(step + 1)
     }
-  }, [isValid, value, guidedQuestions, setGuidedQuestions, goToStep, config.step])
+  }, [isValid, value, step, guidedQuestions, setGuidedQuestions, goToStep])
 
   const handleBack = useCallback(() => {
     // Save current value before going back
     if (value.trim()) {
       setGuidedQuestions({ ...guidedQuestions, goal: value.trim() })
     }
-    goToStep(config.step - 1)
-  }, [value, guidedQuestions, setGuidedQuestions, goToStep, config.step])
+    goToStep(step - 1)
+  }, [value, step, guidedQuestions, setGuidedQuestions, goToStep])
 
   return (
     <QuestionWrapper

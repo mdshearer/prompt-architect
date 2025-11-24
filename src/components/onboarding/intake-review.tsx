@@ -12,7 +12,7 @@
 import { useCallback } from 'react'
 import { useIntake } from './intake-context'
 import { ChevronLeft, Loader2, Send, Pencil } from 'lucide-react'
-import { TASK_LABELS, TONE_LABELS, OUTPUT_LABELS } from '@/lib/intake-questions'
+import { TASK_LABELS, TONE_LABELS, OUTPUT_LABELS, getLastQuestionStep } from '@/lib/intake-questions'
 import { getAiToolDisplayName, getPromptTypeLabel } from '@/lib/intake-helpers'
 
 export default function IntakeReview() {
@@ -35,9 +35,10 @@ export default function IntakeReview() {
   }, [goToStep])
 
   const handleBack = useCallback(() => {
-    // Go back to last question (step 8 for full flow)
-    goToStep(8)
-  }, [goToStep])
+    // Go back to last question (varies by prompt type)
+    const lastQuestionStep = getLastQuestionStep(promptType)
+    goToStep(lastQuestionStep)
+  }, [promptType, goToStep])
 
   return (
     <div className="w-full max-w-3xl mx-auto">

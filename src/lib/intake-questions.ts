@@ -250,3 +250,37 @@ export function getQuestionForStep(step: number, promptType: PromptType | null):
 
   return questions[questionIndex] || null
 }
+
+/**
+ * Returns the step number for the review screen
+ *
+ * @param promptType - Selected prompt type
+ * @returns Step number for review screen (last question step + 1)
+ *
+ * @example
+ * getReviewStep('prompt-architect') // Returns: 9 (2 + 6 questions + 1)
+ * getReviewStep('general-prompt')   // Returns: 6 (2 + 3 questions + 1)
+ */
+export function getReviewStep(promptType: PromptType | null): number {
+  if (!promptType) return 3
+
+  const questionCount = getQuestionsForPromptType(promptType).length
+  return 2 + questionCount + 1 // Review is after all questions
+}
+
+/**
+ * Returns the step number for the last question
+ *
+ * @param promptType - Selected prompt type
+ * @returns Step number of the last question
+ *
+ * @example
+ * getLastQuestionStep('prompt-architect') // Returns: 8 (2 + 6 questions)
+ * getLastQuestionStep('general-prompt')   // Returns: 5 (2 + 3 questions)
+ */
+export function getLastQuestionStep(promptType: PromptType | null): number {
+  if (!promptType) return 3
+
+  const questionCount = getQuestionsForPromptType(promptType).length
+  return 2 + questionCount // Last question is before review
+}

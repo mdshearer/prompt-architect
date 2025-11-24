@@ -17,7 +17,7 @@ import type { TaskOption } from '@/types/intake'
 import { Check } from 'lucide-react'
 
 export default function QuestionTasks() {
-  const { guidedQuestions, setGuidedQuestions, goToStep } = useIntake()
+  const { step, guidedQuestions, setGuidedQuestions, goToStep } = useIntake()
   const [selected, setSelected] = useState<TaskOption[]>(guidedQuestions?.tasks || [])
   const [otherText, setOtherText] = useState(guidedQuestions?.tasksOther || '')
 
@@ -49,9 +49,9 @@ export default function QuestionTasks() {
         tasks: selected,
         tasksOther: selected.includes('other') ? otherText.trim() : undefined
       })
-      goToStep(config.step + 1)
+      goToStep(step + 1)
     }
-  }, [isValid, selected, otherText, guidedQuestions, setGuidedQuestions, goToStep, config.step])
+  }, [isValid, selected, otherText, step, guidedQuestions, setGuidedQuestions, goToStep])
 
   const handleBack = useCallback(() => {
     // Save current selections before going back
@@ -62,8 +62,8 @@ export default function QuestionTasks() {
         tasksOther: selected.includes('other') ? otherText.trim() : undefined
       })
     }
-    goToStep(config.step - 1)
-  }, [selected, otherText, guidedQuestions, setGuidedQuestions, goToStep, config.step])
+    goToStep(step - 1)
+  }, [selected, otherText, step, guidedQuestions, setGuidedQuestions, goToStep])
 
   return (
     <QuestionWrapper

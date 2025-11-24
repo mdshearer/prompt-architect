@@ -16,7 +16,7 @@ import { QUESTION_CONFIGS } from '@/lib/intake-questions'
 import { INTAKE_CONSTRAINTS_MAX_CHARS } from '@/lib/constants'
 
 export default function QuestionConstraints() {
-  const { guidedQuestions, setGuidedQuestions, goToStep } = useIntake()
+  const { step, guidedQuestions, setGuidedQuestions, goToStep } = useIntake()
   const [value, setValue] = useState(guidedQuestions?.constraints || '')
 
   const config = QUESTION_CONFIGS.constraints
@@ -36,8 +36,8 @@ export default function QuestionConstraints() {
       ...guidedQuestions,
       constraints: value.trim() || undefined
     })
-    goToStep(config.step + 1)
-  }, [value, guidedQuestions, setGuidedQuestions, goToStep, config.step])
+    goToStep(step + 1)
+  }, [value, step, guidedQuestions, setGuidedQuestions, goToStep])
 
   const handleBack = useCallback(() => {
     // Save current value before going back
@@ -45,8 +45,8 @@ export default function QuestionConstraints() {
       ...guidedQuestions,
       constraints: value.trim() || undefined
     })
-    goToStep(config.step - 1)
-  }, [value, guidedQuestions, setGuidedQuestions, goToStep, config.step])
+    goToStep(step - 1)
+  }, [value, step, guidedQuestions, setGuidedQuestions, goToStep])
 
   return (
     <QuestionWrapper

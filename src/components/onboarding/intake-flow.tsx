@@ -28,6 +28,7 @@ import QuestionConstraints from './questions/question-constraints'
 import QuestionOutput from './questions/question-output'
 import IntakeReview from './intake-review'
 import OutputDisplay from './output-display'
+import { getQuestionForStep, getReviewStep } from '@/lib/intake-questions'
 
 /**
  * Main intake flow container
@@ -41,7 +42,7 @@ import OutputDisplay from './output-display'
  * </IntakeProvider>
  */
 export default function IntakeFlow() {
-  const { step, intakeCompleted, output } = useIntake()
+  const { step, promptType, intakeCompleted, output } = useIntake()
 
   // If intake is completed and we have output, show the output display
   if (intakeCompleted && output) {
@@ -52,6 +53,10 @@ export default function IntakeFlow() {
     )
   }
 
+  // Get current question config (if step is a question step)
+  const currentQuestion = getQuestionForStep(step, promptType)
+  const reviewStep = getReviewStep(promptType)
+
   // Render the current step
   return (
     <div className="w-full py-8 px-4">
@@ -60,15 +65,20 @@ export default function IntakeFlow() {
 
       {/* Step content */}
       <div className="mt-8">
+        {/* Steps 1-2: AI tool and prompt type selection */}
         {step === 1 && <AiToolSelector />}
         {step === 2 && <PromptTypeSelector />}
-        {step === 3 && <QuestionRole />}
-        {step === 4 && <QuestionGoal />}
-        {step === 5 && <QuestionTasks />}
-        {step === 6 && <QuestionTone />}
-        {step === 7 && <QuestionConstraints />}
-        {step === 8 && <QuestionOutput />}
-        {step === 9 && <IntakeReview />}
+
+        {/* Steps 3+: Dynamic questions based on prompt type */}
+        {currentQuestion && currentQuestion.id === 'role' && <QuestionRole />}
+        {currentQuestion && currentQuestion.id === 'goal' && <QuestionGoal />}
+        {currentQuestion && currentQuestion.id === 'tasks' && <QuestionTasks />}
+        {currentQuestion && currentQuestion.id === 'tone' && <QuestionTone />}
+        {currentQuestion && currentQuestion.id === 'constraints' && <QuestionConstraints />}
+        {currentQuestion && currentQuestion.id === 'outputDetail' && <QuestionOutput />}
+
+        {/* Review step (dynamic based on prompt type) */}
+        {step === reviewStep && <IntakeReview />}
       </div>
     </div>
   )

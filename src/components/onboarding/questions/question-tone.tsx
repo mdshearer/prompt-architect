@@ -16,7 +16,7 @@ import { QUESTION_CONFIGS, TONE_OPTIONS, TONE_LABELS, TONE_DESCRIPTIONS } from '
 import type { ToneOption } from '@/types/intake'
 
 export default function QuestionTone() {
-  const { guidedQuestions, setGuidedQuestions, goToStep } = useIntake()
+  const { step, guidedQuestions, setGuidedQuestions, goToStep } = useIntake()
   const [selected, setSelected] = useState<ToneOption | null>(guidedQuestions?.tone || null)
 
   const config = QUESTION_CONFIGS.tone
@@ -32,17 +32,17 @@ export default function QuestionTone() {
   const handleNext = useCallback(() => {
     if (isValid && selected) {
       setGuidedQuestions({ ...guidedQuestions, tone: selected })
-      goToStep(config.step + 1)
+      goToStep(step + 1)
     }
-  }, [isValid, selected, guidedQuestions, setGuidedQuestions, goToStep, config.step])
+  }, [isValid, selected, step, guidedQuestions, setGuidedQuestions, goToStep])
 
   const handleBack = useCallback(() => {
     // Save current selection before going back
     if (selected) {
       setGuidedQuestions({ ...guidedQuestions, tone: selected })
     }
-    goToStep(config.step - 1)
-  }, [selected, guidedQuestions, setGuidedQuestions, goToStep, config.step])
+    goToStep(step - 1)
+  }, [selected, step, guidedQuestions, setGuidedQuestions, goToStep])
 
   return (
     <QuestionWrapper

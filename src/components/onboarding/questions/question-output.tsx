@@ -16,7 +16,7 @@ import { QUESTION_CONFIGS, OUTPUT_OPTIONS, OUTPUT_LABELS, OUTPUT_DESCRIPTIONS } 
 import type { OutputDetail } from '@/types/intake'
 
 export default function QuestionOutput() {
-  const { guidedQuestions, setGuidedQuestions, goToStep } = useIntake()
+  const { step, guidedQuestions, setGuidedQuestions, goToStep } = useIntake()
   const [selected, setSelected] = useState<OutputDetail | null>(guidedQuestions?.outputDetail || null)
 
   const config = QUESTION_CONFIGS.outputDetail
@@ -32,17 +32,17 @@ export default function QuestionOutput() {
   const handleNext = useCallback(() => {
     if (isValid && selected) {
       setGuidedQuestions({ ...guidedQuestions, outputDetail: selected })
-      goToStep(config.step + 1)
+      goToStep(step + 1)
     }
-  }, [isValid, selected, guidedQuestions, setGuidedQuestions, goToStep, config.step])
+  }, [isValid, selected, step, guidedQuestions, setGuidedQuestions, goToStep])
 
   const handleBack = useCallback(() => {
     // Save current selection before going back
     if (selected) {
       setGuidedQuestions({ ...guidedQuestions, outputDetail: selected })
     }
-    goToStep(config.step - 1)
-  }, [selected, guidedQuestions, setGuidedQuestions, goToStep, config.step])
+    goToStep(step - 1)
+  }, [selected, step, guidedQuestions, setGuidedQuestions, goToStep])
 
   return (
     <QuestionWrapper
