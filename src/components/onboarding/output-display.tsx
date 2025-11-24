@@ -379,7 +379,7 @@ export default function OutputDisplay() {
             font-medium transition-all duration-200
             ${showConfirmReset
               ? 'bg-red-500 text-white hover:bg-red-600'
-              : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+              : 'bg-optimi-gray text-white hover:bg-optimi-gray/90'
             }
           `}
         >

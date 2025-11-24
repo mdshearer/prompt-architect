@@ -76,6 +76,59 @@ export type AiTool = typeof AI_TOOLS[keyof typeof AI_TOOLS]
 export type PromptType = typeof PROMPT_TYPES[keyof typeof PROMPT_TYPES]
 
 // =============================================================================
+// Guided Questions Types
+// =============================================================================
+
+/**
+ * Task options for multi-select question
+ * Users can select multiple tasks they'll use AI for
+ */
+export type TaskOption = 'writing' | 'research' | 'analysis' | 'brainstorming' | 'code' | 'strategy' | 'other'
+
+/**
+ * Tone/style options for AI responses
+ * Determines the communication style of the AI
+ */
+export type ToneOption = 'professional' | 'casual' | 'conversational' | 'technical' | 'creative'
+
+/**
+ * Output detail level options
+ * Controls how verbose AI responses should be
+ */
+export type OutputDetail = 'concise' | 'balanced' | 'comprehensive'
+
+/**
+ * Guided questions data structure
+ * Replaces the single userThoughts field with structured questions
+ */
+export interface GuidedQuestions {
+  role: string                    // Q1: Role/Context (required, 50-200 chars)
+  goal: string                    // Q2: Primary Goal (required, 50-200 chars)
+  tasks: TaskOption[]             // Q3: Specific Tasks (required, min 1)
+  tasksOther?: string             // Q3: Other task description (if 'other' selected)
+  tone: ToneOption                // Q4: Tone & Style (required)
+  constraints?: string            // Q5: Constraints (optional, 0-150 chars)
+  outputDetail: OutputDetail      // Q6: Output Preference (required)
+}
+
+/**
+ * Question configuration metadata
+ * Defines the structure and validation rules for each question
+ */
+export interface QuestionConfig {
+  id: keyof GuidedQuestions
+  step: number
+  title: string
+  description?: string
+  required: boolean
+  minChars?: number
+  maxChars?: number
+  inputType: 'textarea' | 'multiselect' | 'radio'
+  options?: readonly string[]
+  placeholder?: string
+}
+
+// =============================================================================
 // API Request/Response Types
 // =============================================================================
 
@@ -86,7 +139,7 @@ export type PromptType = typeof PROMPT_TYPES[keyof typeof PROMPT_TYPES]
 export interface IntakeAPIRequest {
   aiTool: AiTool
   promptType: PromptType
-  userThoughts: string // 20-500 characters
+  guidedQuestions: GuidedQuestions // Structured question responses
 }
 
 /**
