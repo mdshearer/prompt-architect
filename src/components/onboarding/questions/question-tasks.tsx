@@ -81,24 +81,24 @@ export default function QuestionTasks() {
             type="button"
             onClick={() => toggleTask(task)}
             className={`
-              w-full flex items-center gap-3 p-4 rounded-xl border-2
+              w-full flex items-center gap-3 p-4 rounded-xl border
               transition-all duration-200
               ${selected.includes(task)
-                ? 'border-optimi-primary bg-optimi-primary/5'
-                : 'border-gray-200 hover:border-optimi-primary/50'
+                ? 'border-[#00C896] bg-[#00C896]/10'
+                : 'border-gray-200 bg-gray-50 hover:border-[#00C896]/50 hover:bg-gray-100'
               }
             `}
           >
             <div className={`
               w-6 h-6 rounded-lg border-2 flex items-center justify-center flex-shrink-0
               ${selected.includes(task)
-                ? 'border-optimi-primary bg-optimi-primary'
-                : 'border-gray-300'
+                ? 'border-[#00C896] bg-[#00C896]'
+                : 'border-gray-300 bg-white'
               }
             `}>
               {selected.includes(task) && <Check className="w-4 h-4 text-white" />}
             </div>
-            <span className="font-medium text-gray-700 text-left">{TASK_LABELS[task]}</span>
+            <span className="font-medium text-[#464650] text-left">{TASK_LABELS[task]}</span>
           </button>
         ))}
       </div>
@@ -112,10 +112,11 @@ export default function QuestionTasks() {
             onChange={(e) => setOtherText(e.target.value)}
             placeholder="Please describe the other tasks..."
             className={`
-              w-full p-3 rounded-lg border-2 transition-colors
-              focus:outline-none focus:ring-2 focus:ring-optimi-primary focus:ring-offset-2
+              w-full p-3 rounded-lg border transition-all
+              bg-gray-100 text-[#464650] placeholder:text-gray-400
+              focus:outline-none focus:ring-2 focus:ring-[#00C896] focus:ring-offset-2 focus:bg-white
               ${otherText.trim().length > 0
-                ? 'border-optimi-primary'
+                ? 'border-[#00C896]'
                 : 'border-orange-400'
               }
             `}

@@ -5,6 +5,7 @@
  *
  * Reusable wrapper for all question components.
  * Provides consistent layout, navigation buttons, and styling.
+ * Matches the mockup design with bold heading, gray input area, and yellow CTA.
  *
  * @module question-wrapper
  */
@@ -56,19 +57,19 @@ export default function QuestionWrapper({
 }: QuestionWrapperProps) {
   return (
     <div className="w-full max-w-2xl mx-auto">
-      {/* Question header */}
-      <div className="mb-8">
-        <h2 className="text-2xl font-bold text-optimi-gray mb-2">
+      {/* Question header - Bold, dark text */}
+      <div className="mb-6">
+        <h2 className="text-2xl font-bold text-[#464650]">
           {title}
           {required && <span className="text-red-500 ml-1">*</span>}
         </h2>
         {description && (
-          <p className="text-gray-500">{description}</p>
+          <p className="text-gray-500 mt-1">{description}</p>
         )}
       </div>
 
       {/* Question content (input area) */}
-      <div className="mb-8">
+      <div className="mb-6">
         {children}
       </div>
 
@@ -78,7 +79,7 @@ export default function QuestionWrapper({
           type="button"
           onClick={onBack}
           disabled={isLoading}
-          className="inline-flex items-center gap-2 px-4 py-2 text-gray-600 hover:text-optimi-primary transition-colors disabled:opacity-50"
+          className="inline-flex items-center gap-2 px-4 py-2 text-gray-500 hover:text-[#283791] transition-colors disabled:opacity-50"
         >
           <ChevronLeft className="w-4 h-4" />
           Back
@@ -89,15 +90,13 @@ export default function QuestionWrapper({
           onClick={onNext}
           disabled={!canGoNext || isLoading}
           className={`
-            inline-flex items-center gap-2 px-8 py-4 rounded-xl
-            font-bold text-base transition-all duration-200 shadow-lg
+            inline-flex items-center justify-center px-8 py-3 rounded-full
+            font-bold text-base transition-all duration-200
             ${!canGoNext || isLoading
-
-              ? 'bg-gray-400 text-gray-200 cursor-not-allowed opacity-60'
-              : 'bg-optimi-yellow text-optimi-primary hover:bg-optimi-yellow/90 hover:shadow-lg shadow-md'
+              ? 'bg-gray-300 text-gray-400 cursor-not-allowed'
+              : 'bg-[#FFDC00] text-[#464650] hover:bg-[#f0d000] hover:shadow-lg shadow-md'
             }
-            focus:outline-none focus:ring-2 focus:ring-optimi-yellow focus:ring-offset-2
-
+            focus:outline-none focus:ring-2 focus:ring-[#FFDC00] focus:ring-offset-2
           `}
         >
           Next
