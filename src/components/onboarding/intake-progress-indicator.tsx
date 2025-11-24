@@ -11,6 +11,7 @@
 
 import { Check } from 'lucide-react'
 import { useIntake } from './intake-context'
+import { getTotalSteps } from '@/lib/intake-questions'
 
 /**
  * Progress indicator showing current position in the intake flow
@@ -18,24 +19,27 @@ import { useIntake } from './intake-context'
  * Displays:
  * - Visual step circles (completed, current, upcoming)
  * - Connector lines between steps
- * - Step counter (Step X of 3)
+ * - Step counter (Step X of Y - dynamically calculated)
  *
  * @example
  * <IntakeProgressIndicator />
  */
 export default function IntakeProgressIndicator() {
-  const { step } = useIntake()
+  const { step, promptType } = useIntake()
+
+  // Calculate total steps dynamically based on prompt type
+  const totalSteps = getTotalSteps(promptType)
 
   return (
     <div className="w-full mb-8">
       {/* Step counter text */}
       <div className="text-center mb-4">
         <span className="text-sm text-gray-500">
-          Step {step} of 3
+          Step {step} of {totalSteps}
         </span>
       </div>
 
-      {/* Visual step indicator */}
+      {/* Visual step indicator - show first 3 steps as visual markers */}
       <div className="flex items-center justify-center">
         {[1, 2, 3].map((stepNum, index) => (
           <div key={stepNum} className="flex items-center">

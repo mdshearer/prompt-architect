@@ -184,13 +184,9 @@ function HomeContent() {
 
         {/* Free tier notice */}
         <div className="text-center mt-8 pb-4">
-          <div className="inline-flex items-center space-x-3 text-sm text-white/80 bg-white/10 backdrop-blur px-5 py-3 rounded-full shadow-sm border border-[#0078FF]/30 hover:bg-white/15 transition-colors">
-            <span className="flex items-center gap-1.5">
-              <span className="w-2 h-2 rounded-full bg-[#00C896] animate-pulse" />
-              Intake is free
-            </span>
-            <span className="text-white/40">•</span>
-            <span>3 follow-up chats included</span>
+          <div className="inline-flex items-center space-x-2 text-sm text-white/80 bg-white/10 backdrop-blur px-5 py-3 rounded-full shadow-sm border border-[#0078FF]/30 hover:bg-white/15 transition-colors">
+            <span className="w-2 h-2 rounded-full bg-[#00C896] animate-pulse" />
+            <span>Create 3 prompts for free. No login.</span>
           </div>
         </div>
       </div>
