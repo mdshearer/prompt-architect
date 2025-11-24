@@ -4,28 +4,27 @@
  * Progress Indicator for Intake Flow
  *
  * Displays the current step in the multi-step intake process with a
- * progress bar and step counter.
+ * visual step indicator showing completed, current, and upcoming steps.
  *
  * @module intake-progress-indicator
  */
 
+import { Check } from 'lucide-react'
 import { useIntake } from './intake-context'
-import { getTotalSteps } from '@/lib/intake-questions'
 
 /**
  * Progress indicator showing current position in the intake flow
  *
  * Displays:
- * - Progress bar showing percentage complete
- * - Step counter (Step X of Y)
- *
- * Total steps varies by prompt type (9 for full flow, 6 for general prompt)
+ * - Visual step circles (completed, current, upcoming)
+ * - Connector lines between steps
+ * - Step counter (Step X of 3)
  *
  * @example
  * <IntakeProgressIndicator />
  */
 export default function IntakeProgressIndicator() {
-  const { step, promptType } = useIntake()
+  const { step } = useIntake()
 
   return (
     <div className="w-full mb-8">
@@ -60,23 +59,18 @@ export default function IntakeProgressIndicator() {
               )}
             </div>
 
-  // Calculate progress percentage
-  const progress = Math.min(100, (step / totalSteps) * 100)
-
-  return (
-    <div className="w-full max-w-2xl mx-auto mb-8">
-      {/* Progress bar */}
-      <div className="h-2 bg-gray-200 rounded-full overflow-hidden mb-2">
-        <div
-          className="h-full bg-optimi-primary transition-all duration-300"
-          style={{ width: `${progress}%` }}
-        />
+            {/* Connector line (not after last step) */}
+            {index < 2 && (
+              <div
+                className={`
+                  w-16 h-1 mx-2 rounded transition-all duration-200
+                  ${stepNum < step ? 'bg-[#00C896]' : 'bg-gray-300'}
+                `}
+              />
+            )}
+          </div>
+        ))}
       </div>
-
-      {/* Step counter */}
-      <p className="text-sm text-gray-500 text-center">
-        Step {step} of {totalSteps}
-      </p>
     </div>
   )
 }
