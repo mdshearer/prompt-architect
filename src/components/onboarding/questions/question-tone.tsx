@@ -60,11 +60,11 @@ export default function QuestionTone() {
             type="button"
             onClick={() => setSelected(tone)}
             className={`
-              w-full flex items-start gap-4 p-4 rounded-xl border-2
+              w-full flex items-start gap-4 p-4 rounded-xl border
               transition-all duration-200 text-left
               ${selected === tone
-                ? 'border-optimi-primary bg-optimi-primary/5'
-                : 'border-gray-200 hover:border-optimi-primary/50'
+                ? 'border-[#00C896] bg-[#00C896]/10'
+                : 'border-gray-200 bg-gray-50 hover:border-[#00C896]/50 hover:bg-gray-100'
               }
             `}
           >
@@ -72,18 +72,18 @@ export default function QuestionTone() {
             <div className={`
               w-6 h-6 rounded-full border-2 flex items-center justify-center flex-shrink-0 mt-0.5
               ${selected === tone
-                ? 'border-optimi-primary'
-                : 'border-gray-300'
+                ? 'border-[#00C896]'
+                : 'border-gray-300 bg-white'
               }
             `}>
               {selected === tone && (
-                <div className="w-3 h-3 rounded-full bg-optimi-primary" />
+                <div className="w-3 h-3 rounded-full bg-[#00C896]" />
               )}
             </div>
 
             {/* Label and description */}
             <div className="flex-1">
-              <div className="font-semibold text-gray-700 mb-1">
+              <div className="font-semibold text-[#464650] mb-1">
                 {TONE_LABELS[tone]}
               </div>
               <div className="text-sm text-gray-500">

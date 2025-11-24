@@ -54,18 +54,19 @@ export default function QuestionRole() {
       canGoNext={isValid}
       required={config.required}
     >
-      {/* Textarea */}
+      {/* Textarea - Light gray background matching mockup */}
       <textarea
         value={value}
         onChange={(e) => setValue(e.target.value)}
         placeholder={config.placeholder}
         rows={4}
         className={`
-          w-full p-4 rounded-xl border-2 resize-none
-          transition-colors duration-200
-          focus:outline-none focus:ring-2 focus:ring-optimi-primary focus:ring-offset-2
+          w-full p-4 rounded-xl border resize-none
+          bg-gray-100 text-[#464650] placeholder:text-gray-400
+          transition-all duration-200
+          focus:outline-none focus:ring-2 focus:ring-[#00C896] focus:ring-offset-2 focus:bg-white
           ${isValid || charCount === 0
-            ? 'border-gray-200 focus:border-optimi-primary'
+            ? 'border-gray-200'
             : 'border-orange-400'
           }
         `}

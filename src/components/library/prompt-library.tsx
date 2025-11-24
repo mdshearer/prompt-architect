@@ -178,7 +178,7 @@ export default function PromptLibrary({ isOpen, onClose }: IPromptLibraryProps) 
                   <button
                     key={filter}
                     onClick={() => {
-                      setSelectedFilter(filter as any)
+                      setSelectedFilter(filter as 'all' | 'recent' | 'favorites' | 'custom_instructions' | 'projects_gems' | 'threads')
                       setIsFilterOpen(false)
                     }}
                     className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 first:rounded-t-lg last:rounded-b-lg"
