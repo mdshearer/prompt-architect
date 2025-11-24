@@ -77,7 +77,7 @@ function HomeContent() {
   // If intake is completed and we have output, show success state with options
   if (intakeCompleted && output) {
     return (
-      <main className="min-h-screen bg-gray-50">
+      <main className="min-h-screen bg-gradient-to-b from-[#283791] to-slate-900">
         <div className="container mx-auto px-4 py-8">
           <CompactHeader />
 
@@ -89,13 +89,13 @@ function HomeContent() {
             <div className="text-center mt-8 pb-8">
               <button
                 onClick={() => setShowChat(true)}
-                className="inline-flex items-center gap-2 px-8 py-3 rounded-xl bg-optimi-blue text-white font-semibold hover:bg-optimi-blue/90 transition-colors"
+                className="inline-flex items-center gap-2 px-8 py-3 rounded-xl bg-gradient-to-r from-[#FFDC00] to-[#00C896] text-[#283791] font-semibold hover:shadow-lg hover:shadow-[#00C896]/50 transition-all hover:scale-105"
               >
                 <Sparkles className="w-5 h-5" />
                 Continue to Chat
                 <ArrowRight className="w-5 h-5" />
               </button>
-              <p className="text-sm text-gray-500 mt-3">
+              <p className="text-sm text-white/70 mt-3">
                 Get additional help refining your prompt
               </p>
             </div>
@@ -108,26 +108,26 @@ function HomeContent() {
   // If returning user with existing completed session (output not stored, so go to chat)
   if (existingSession) {
     return (
-      <main className="min-h-screen bg-gray-50">
+      <main className="min-h-screen bg-gradient-to-b from-[#283791] to-slate-900">
         <div className="container mx-auto px-4 py-8">
           <CompactHeader />
 
           <div className="max-w-2xl mx-auto">
-            <div className="bg-white rounded-xl shadow-lg p-8 text-center">
-              <div className="w-16 h-16 bg-optimi-primary/10 rounded-full flex items-center justify-center mx-auto mb-6">
-                <Sparkles className="w-8 h-8 text-optimi-primary" />
+            <div className="bg-white/95 backdrop-blur rounded-2xl shadow-2xl p-8 text-center border border-[#0078FF]/20">
+              <div className="w-16 h-16 bg-gradient-to-br from-[#0078FF] to-[#00C896] rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg">
+                <Sparkles className="w-8 h-8 text-white" />
               </div>
 
-              <h2 className="text-2xl font-bold text-optimi-gray mb-3">
+              <h2 className="text-2xl font-bold text-[#464650] mb-3">
                 Welcome Back!
               </h2>
-              <p className="text-gray-600 mb-6">
+              <p className="text-gray-700 mb-6">
                 You have an existing session for{' '}
-                <span className="font-semibold">
+                <span className="font-semibold text-[#283791]">
                   {getAiToolDisplayName(existingSession.aiTool)}
                 </span>
                 {' - '}
-                <span className="font-semibold">
+                <span className="font-semibold text-[#283791]">
                   {getPromptTypeLabel(existingSession.promptType, existingSession.aiTool)}
                 </span>
               </p>
@@ -138,7 +138,7 @@ function HomeContent() {
                     setExistingSession(null)
                     setShowChat(true)
                   }}
-                  className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-optimi-primary text-white font-semibold hover:bg-optimi-primary/90 transition-colors"
+                  className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-[#0078FF] to-[#00C896] text-white font-semibold hover:shadow-lg hover:shadow-[#00C896]/50 transition-all hover:scale-105"
                 >
                   <ArrowRight className="w-5 h-5" />
                   Continue to Chat
@@ -149,7 +149,7 @@ function HomeContent() {
                     resetIntake()
                     setExistingSession(null)
                   }}
-                  className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-gray-100 text-gray-700 font-semibold hover:bg-gray-200 transition-colors"
+                  className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-[#FFDC00]/20 text-[#283791] font-semibold hover:bg-[#FFDC00]/30 transition-colors border border-[#FFDC00]/50"
                 >
                   <RotateCcw className="w-5 h-5" />
                   Start Fresh
@@ -164,7 +164,7 @@ function HomeContent() {
 
   // Default: Show the intake flow with hero section
   return (
-    <main className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
+    <main className="min-h-screen bg-gradient-to-b from-[#283791] via-[#283791] to-slate-900">
       <div className="container mx-auto px-4 py-8">
         <HeroSection />
 
@@ -178,18 +178,18 @@ function HomeContent() {
           </div>
         )}
 
-        <div className="max-w-4xl mx-auto bg-white rounded-xl shadow-lg overflow-hidden border border-gray-100">
+        <div className="max-w-4xl mx-auto bg-white/95 backdrop-blur rounded-2xl shadow-2xl overflow-hidden border border-[#0078FF]/20">
           <IntakeFlow />
         </div>
 
         {/* Free tier notice */}
-        <div className="text-center mt-8">
-          <div className="inline-flex items-center space-x-3 text-sm text-gray-500 bg-white px-5 py-3 rounded-full shadow-sm border border-gray-100">
+        <div className="text-center mt-8 pb-4">
+          <div className="inline-flex items-center space-x-3 text-sm text-white/80 bg-white/10 backdrop-blur px-5 py-3 rounded-full shadow-sm border border-[#0078FF]/30 hover:bg-white/15 transition-colors">
             <span className="flex items-center gap-1.5">
-              <span className="w-2 h-2 rounded-full bg-optimi-green" />
+              <span className="w-2 h-2 rounded-full bg-[#00C896] animate-pulse" />
               Intake is free
             </span>
-            <span className="text-gray-300">•</span>
+            <span className="text-white/40">•</span>
             <span>3 follow-up chats included</span>
           </div>
         </div>
@@ -217,33 +217,33 @@ function HeroSection({ showCta = false, onCtaClick }: { showCta?: boolean; onCta
     <header className="text-center mb-12">
       {/* Logo/Brand */}
       <div className="mb-8">
-        <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-optimi-primary to-optimi-blue mb-4">
+        <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-[#0078FF] to-[#00C896] mb-4 shadow-lg shadow-[#0078FF]/50">
           <Sparkles className="w-8 h-8 text-white" />
         </div>
-        <p className="text-sm font-medium text-optimi-primary tracking-wider uppercase">
-          Prompt Architect
+        <p className="text-sm font-semibold text-[#FFDC00] tracking-widest uppercase">
+          Prompt Architect  
         </p>
       </div>
 
       {/* Main Tagline */}
-      <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 mb-6 tracking-tight">
+      <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-6 tracking-tight">
         Stop Guessing.{' '}
-        <span className="text-transparent bg-clip-text bg-gradient-to-r from-optimi-primary to-optimi-blue">
+        <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#FFDC00] via-[#00C896] to-[#0078FF]">
           Start Architecting.
         </span>
       </h1>
 
       {/* Value Proposition */}
-      <p className="text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed mb-8">
+      <p className="text-xl text-white/85 max-w-2xl mx-auto leading-relaxed mb-8">
         Build structured, high-performance prompts for any AI model
-        by answering simple questions.
+        by answering simple questions. Perfect for teams just getting started with AI.
       </p>
 
       {/* CTA Button (optional) */}
       {showCta && onCtaClick && (
         <button
           onClick={onCtaClick}
-          className="inline-flex items-center gap-2 px-8 py-4 rounded-xl bg-optimi-primary text-white font-semibold text-lg hover:bg-optimi-primary/90 transition-all hover:scale-105 shadow-lg shadow-optimi-primary/25"
+          className="inline-flex items-center gap-2 px-8 py-4 rounded-xl bg-gradient-to-r from-[#FFDC00] to-[#00C896] text-[#283791] font-semibold text-lg hover:shadow-xl hover:shadow-[#00C896]/50 transition-all hover:scale-105 shadow-lg"
         >
           Start Building Your First Prompt
           <ArrowRight className="w-5 h-5" />
@@ -251,11 +251,11 @@ function HeroSection({ showCta = false, onCtaClick }: { showCta?: boolean; onCta
       )}
 
       {/* Supported Tools */}
-      <div className="mt-12 pt-8 border-t border-gray-200">
-        <p className="text-sm text-gray-500 mb-4">Supported AI Tools</p>
+      <div className="mt-12 pt-8 border-t border-[#0078FF]/30">
+        <p className="text-sm text-white/60 mb-4 font-medium">Works with these major AI tools</p>
         <div className="flex items-center justify-center gap-8 flex-wrap">
           {SUPPORTED_TOOLS.map((tool) => (
-            <div key={tool.name} className="flex items-center gap-2 text-gray-600">
+            <div key={tool.name} className="flex items-center gap-2 text-white/80 bg-white/10 px-4 py-2 rounded-lg backdrop-blur hover:bg-white/15 transition-colors">
               <tool.icon className={`w-5 h-5 ${tool.color}`} />
               <span className="font-medium">{tool.name}</span>
             </div>
@@ -273,10 +273,10 @@ function CompactHeader() {
   return (
     <header className="text-center mb-8">
       <div className="inline-flex items-center gap-3 mb-4">
-        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-optimi-primary to-optimi-blue flex items-center justify-center">
+        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#0078FF] to-[#00C896] flex items-center justify-center shadow-lg shadow-[#0078FF]/50">
           <Sparkles className="w-5 h-5 text-white" />
         </div>
-        <h1 className="text-2xl font-bold text-gray-900">Prompt Architect</h1>
+        <h1 className="text-2xl font-bold text-white">Prompt Architect</h1>
       </div>
     </header>
   )

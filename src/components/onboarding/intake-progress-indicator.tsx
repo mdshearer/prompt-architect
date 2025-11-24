@@ -27,8 +27,38 @@ import { getTotalSteps } from '@/lib/intake-questions'
 export default function IntakeProgressIndicator() {
   const { step, promptType } = useIntake()
 
-  // Get total steps based on prompt type
-  const totalSteps = getTotalSteps(promptType)
+  return (
+    <div className="w-full mb-8">
+      {/* Step counter text */}
+      <div className="text-center mb-4">
+        <span className="text-sm text-gray-500">
+          Step {step} of 3
+        </span>
+      </div>
+
+      {/* Visual step indicator */}
+      <div className="flex items-center justify-center">
+        {[1, 2, 3].map((stepNum, index) => (
+          <div key={stepNum} className="flex items-center">
+            {/* Step circle */}
+            <div
+              className={`
+                flex items-center justify-center w-12 h-12 rounded-full
+                text-lg font-bold transition-all duration-200 shadow-md
+                ${stepNum < step
+                  ? 'bg-[#00C896] text-white'
+                  : stepNum === step
+                    ? 'bg-[#FFDC00] text-[#283791] scale-110'
+                    : 'bg-gray-300 text-gray-600'
+                }
+              `}
+            >
+              {stepNum < step ? (
+                <Check className="w-6 h-6" />
+              ) : (
+                stepNum
+              )}
+            </div>
 
   // Calculate progress percentage
   const progress = Math.min(100, (step / totalSteps) * 100)
