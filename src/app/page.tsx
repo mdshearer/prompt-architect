@@ -77,7 +77,7 @@ function HomeContent() {
   // If intake is completed and we have output, show success state with options
   if (intakeCompleted && output) {
     return (
-      <main className="min-h-screen bg-gradient-to-b from-optimi-primary to-slate-900">
+      <main className="min-h-screen bg-gradient-to-b from-[#283791] to-slate-900">
         <div className="container mx-auto px-4 py-8">
           <CompactHeader />
 
@@ -89,7 +89,7 @@ function HomeContent() {
             <div className="text-center mt-8 pb-8">
               <button
                 onClick={() => setShowChat(true)}
-                className="inline-flex items-center gap-2 px-8 py-3 rounded-xl bg-gradient-to-r from-optimi-yellow to-optimi-green text-optimi-primary font-semibold hover:shadow-lg hover:shadow-optimi-green/50 transition-all hover:scale-105"
+                className="inline-flex items-center gap-2 px-8 py-3 rounded-xl bg-gradient-to-r from-[#FFDC00] to-[#00C896] text-[#283791] font-semibold hover:shadow-lg hover:shadow-[#00C896]/50 transition-all hover:scale-105"
               >
                 <Sparkles className="w-5 h-5" />
                 Continue to Chat
@@ -108,26 +108,26 @@ function HomeContent() {
   // If returning user with existing completed session (output not stored, so go to chat)
   if (existingSession) {
     return (
-      <main className="min-h-screen bg-gradient-to-b from-optimi-primary to-slate-900">
+      <main className="min-h-screen bg-gradient-to-b from-[#283791] to-slate-900">
         <div className="container mx-auto px-4 py-8">
           <CompactHeader />
 
           <div className="max-w-2xl mx-auto">
-            <div className="bg-white/95 backdrop-blur rounded-2xl shadow-2xl p-8 text-center border border-optimi-blue/20">
-              <div className="w-16 h-16 bg-gradient-to-br from-optimi-blue to-optimi-green rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg">
+            <div className="bg-white/95 backdrop-blur rounded-2xl shadow-2xl p-8 text-center border border-[#0078FF]/20">
+              <div className="w-16 h-16 bg-gradient-to-br from-[#0078FF] to-[#00C896] rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg">
                 <Sparkles className="w-8 h-8 text-white" />
               </div>
 
-              <h2 className="text-2xl font-bold text-optimi-gray mb-3">
+              <h2 className="text-2xl font-bold text-[#464650] mb-3">
                 Welcome Back!
               </h2>
               <p className="text-gray-700 mb-6">
                 You have an existing session for{' '}
-                <span className="font-semibold text-optimi-primary">
+                <span className="font-semibold text-[#283791]">
                   {getAiToolDisplayName(existingSession.aiTool)}
                 </span>
                 {' - '}
-                <span className="font-semibold text-optimi-primary">
+                <span className="font-semibold text-[#283791]">
                   {getPromptTypeLabel(existingSession.promptType, existingSession.aiTool)}
                 </span>
               </p>
@@ -138,7 +138,7 @@ function HomeContent() {
                     setExistingSession(null)
                     setShowChat(true)
                   }}
-                  className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-optimi-blue to-optimi-green text-white font-semibold hover:shadow-lg hover:shadow-optimi-green/50 transition-all hover:scale-105"
+                  className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-[#0078FF] to-[#00C896] text-white font-semibold hover:shadow-lg hover:shadow-[#00C896]/50 transition-all hover:scale-105"
                 >
                   <ArrowRight className="w-5 h-5" />
                   Continue to Chat
@@ -149,7 +149,7 @@ function HomeContent() {
                     resetIntake()
                     setExistingSession(null)
                   }}
-                  className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-optimi-yellow/20 text-optimi-primary font-semibold hover:bg-optimi-yellow/30 transition-colors border border-optimi-yellow/50"
+                  className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-[#FFDC00]/20 text-[#283791] font-semibold hover:bg-[#FFDC00]/30 transition-colors border border-[#FFDC00]/50"
                 >
                   <RotateCcw className="w-5 h-5" />
                   Start Fresh
@@ -164,7 +164,7 @@ function HomeContent() {
 
   // Default: Show the intake flow with hero section
   return (
-    <main className="min-h-screen bg-gradient-to-b from-optimi-primary via-optimi-primary to-slate-900">
+    <main className="min-h-screen bg-gradient-to-b from-[#283791] via-[#283791] to-slate-900">
       <div className="container mx-auto px-4 py-8">
         <HeroSection />
 
@@ -178,15 +178,15 @@ function HomeContent() {
           </div>
         )}
 
-        <div className="max-w-4xl mx-auto bg-white/95 backdrop-blur rounded-2xl shadow-2xl overflow-hidden border border-optimi-blue/20">
+        <div className="max-w-4xl mx-auto bg-white/95 backdrop-blur rounded-2xl shadow-2xl overflow-hidden border border-[#0078FF]/20">
           <IntakeFlow />
         </div>
 
         {/* Free tier notice */}
         <div className="text-center mt-8 pb-4">
-          <div className="inline-flex items-center space-x-3 text-sm text-white/80 bg-white/10 backdrop-blur px-5 py-3 rounded-full shadow-sm border border-optimi-blue/30 hover:bg-white/15 transition-colors">
+          <div className="inline-flex items-center space-x-3 text-sm text-white/80 bg-white/10 backdrop-blur px-5 py-3 rounded-full shadow-sm border border-[#0078FF]/30 hover:bg-white/15 transition-colors">
             <span className="flex items-center gap-1.5">
-              <span className="w-2 h-2 rounded-full bg-optimi-green animate-pulse" />
+              <span className="w-2 h-2 rounded-full bg-[#00C896] animate-pulse" />
               Intake is free
             </span>
             <span className="text-white/40">•</span>
@@ -217,18 +217,18 @@ function HeroSection({ showCta = false, onCtaClick }: { showCta?: boolean; onCta
     <header className="text-center mb-12">
       {/* Logo/Brand */}
       <div className="mb-8">
-        <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-optimi-blue to-optimi-green mb-4 shadow-lg shadow-optimi-blue/50">
+        <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-[#0078FF] to-[#00C896] mb-4 shadow-lg shadow-[#0078FF]/50">
           <Sparkles className="w-8 h-8 text-white" />
         </div>
-        <p className="text-sm font-semibold text-optimi-yellow tracking-widest uppercase">
-          Prompt Architect
+        <p className="text-sm font-semibold text-[#FFDC00] tracking-widest uppercase">
+          Prompt Architect  
         </p>
       </div>
 
       {/* Main Tagline */}
       <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-6 tracking-tight">
         Stop Guessing.{' '}
-        <span className="text-transparent bg-clip-text bg-gradient-to-r from-optimi-yellow via-optimi-green to-optimi-blue">
+        <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#FFDC00] via-[#00C896] to-[#0078FF]">
           Start Architecting.
         </span>
       </h1>
@@ -243,7 +243,7 @@ function HeroSection({ showCta = false, onCtaClick }: { showCta?: boolean; onCta
       {showCta && onCtaClick && (
         <button
           onClick={onCtaClick}
-          className="inline-flex items-center gap-2 px-8 py-4 rounded-xl bg-gradient-to-r from-optimi-yellow to-optimi-green text-optimi-primary font-semibold text-lg hover:shadow-xl hover:shadow-optimi-green/50 transition-all hover:scale-105 shadow-lg"
+          className="inline-flex items-center gap-2 px-8 py-4 rounded-xl bg-gradient-to-r from-[#FFDC00] to-[#00C896] text-[#283791] font-semibold text-lg hover:shadow-xl hover:shadow-[#00C896]/50 transition-all hover:scale-105 shadow-lg"
         >
           Start Building Your First Prompt
           <ArrowRight className="w-5 h-5" />
@@ -251,7 +251,7 @@ function HeroSection({ showCta = false, onCtaClick }: { showCta?: boolean; onCta
       )}
 
       {/* Supported Tools */}
-      <div className="mt-12 pt-8 border-t border-optimi-blue/30">
+      <div className="mt-12 pt-8 border-t border-[#0078FF]/30">
         <p className="text-sm text-white/60 mb-4 font-medium">Works with all major AI tools</p>
         <div className="flex items-center justify-center gap-8 flex-wrap">
           {SUPPORTED_TOOLS.map((tool) => (
@@ -273,7 +273,7 @@ function CompactHeader() {
   return (
     <header className="text-center mb-8">
       <div className="inline-flex items-center gap-3 mb-4">
-        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-optimi-blue to-optimi-green flex items-center justify-center shadow-lg shadow-optimi-blue/50">
+        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#0078FF] to-[#00C896] flex items-center justify-center shadow-lg shadow-[#0078FF]/50">
           <Sparkles className="w-5 h-5 text-white" />
         </div>
         <h1 className="text-2xl font-bold text-white">Prompt Architect</h1>
