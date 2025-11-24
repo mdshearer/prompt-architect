@@ -64,6 +64,36 @@ Claude: [Runs tests, if passing commits and pushes changes]
 
 ---
 
+## Pull Request Requirements
+
+When creating a pull request, ALWAYS include inline code review comments on the changed files. This applies whether creating a new PR or pushing to an existing branch.
+
+### Required PR Steps:
+1. **Review all changes** before creating the PR
+2. **Add inline comments** on significant code changes using `gh api` to post review comments:
+   - Explain what the change does and why
+   - Highlight any potential concerns or trade-offs
+   - Note any areas that may need future attention
+3. **Create the PR** with a clear summary in the body
+
+### Example Comment Command:
+```bash
+gh api repos/{owner}/{repo}/pulls/{pr_number}/comments \
+  -f body="Explanation of the change" \
+  -f path="src/file.tsx" \
+  -f line=42 \
+  -f side="RIGHT"
+```
+
+### When to Add Comments:
+- Any logic changes (not just formatting)
+- New functions or components
+- Deleted code (explain why it was removed)
+- Refactored code (explain the improvement)
+- Bug fixes (explain what was broken and how it's fixed)
+
+---
+
 ## Core Features
 
 - **Free tier**: 3 free chat messages per category with AI-powered prompt coaching
