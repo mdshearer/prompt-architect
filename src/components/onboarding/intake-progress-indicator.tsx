@@ -28,7 +28,9 @@ export default function IntakeProgressIndicator() {
   const { step, promptType } = useIntake()
 
   // Calculate total steps dynamically based on prompt type
-  const totalSteps = getTotalSteps(promptType)
+  // If we're on step 2 (prompt type selection) but don't have a type yet,
+  // assume the most common case (prompt-architect = 9 steps) to avoid the jarring jump
+  const totalSteps = getTotalSteps(promptType) || (step === 2 ? 9 : 2)
 
   // Calculate progress percentage (using 3 visual segments)
   const visualSteps = 3
