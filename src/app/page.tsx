@@ -248,34 +248,16 @@ function BackgroundDecorations() {
 
 /**
  * Character illustration component
-
- * Shows the character with roll of paper
+ * Shows the character standing next to the card with overlapping hand
  */
 function CharacterIllustration() {
   return (
-    <div className="relative w-[300px] h-[380px]">
-
-      {/* Small sparkles around the character */}
-      <svg className="absolute top-4 right-4 w-6 h-6 text-[#FFDC00] animate-pulse" viewBox="0 0 24 24" fill="currentColor">
-        <path d="M12 0L14.59 9.41L24 12L14.59 14.59L12 24L9.41 14.59L0 12L9.41 9.41L12 0Z" />
-      </svg>
-      <svg className="absolute top-12 left-2 w-4 h-4 text-[#FFDC00] animate-pulse delay-100" viewBox="0 0 24 24" fill="currentColor">
-        <path d="M12 0L14.59 9.41L24 12L14.59 14.59L12 24L9.41 14.59L0 12L9.41 9.41L12 0Z" />
-      </svg>
-      <svg className="absolute bottom-20 right-8 w-5 h-5 text-[#FFDC00] animate-pulse delay-200" viewBox="0 0 24 24" fill="currentColor">
-        <path d="M12 0L14.59 9.41L24 12L14.59 14.59L12 24L9.41 14.59L0 12L9.41 9.41L12 0Z" />
-      </svg>
-
-      {/* Green circle accent */}
-      <div className="absolute bottom-32 left-0 w-8 h-8 rounded-full border-2 border-[#00C896]" />
-
-
-      {/* Character image */}
+    <div className="relative -ml-20 lg:-ml-32 h-full flex items-start">
+      {/* Character image - full size standing close */}
       <img 
-        src="/images/character-with-paper.png" 
-        alt="Character with roll of paper" 
-        className="w-full h-full object-contain"
-
+        src="/images/prompt-coach.png" 
+        alt="Prompt coach character" 
+        className="h-full w-auto object-contain object-bottom"
       />
     </div>
   )
