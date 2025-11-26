@@ -184,22 +184,24 @@ function HomeContent() {
 
         {/* Main content area with card and character */}
         <div className="flex items-center justify-center gap-4 lg:gap-8">
-          {/* White card container */}
-          <div className="w-full max-w-4xl bg-white rounded-2xl shadow-2xl overflow-hidden">
-            <IntakeFlow />
+          <div className="w-full max-w-4xl">
+            {/* White card container */}
+            <div className="bg-white rounded-2xl shadow-2xl overflow-hidden">
+              <IntakeFlow />
+            </div>
+
+            {/* Sticky CTA Footer */}
+            <div className="text-center mt-12 pb-8">
+              <p className="text-white text-sm">
+                Start building your first AI coach. No login required.
+              </p>
+            </div>
           </div>
 
           {/* Character illustration - hidden on smaller screens */}
           <div className="hidden lg:block flex-shrink-0">
             <CharacterIllustration />
           </div>
-        </div>
-
-        {/* Sticky CTA Footer */}
-        <div className="max-w-4xl mx-auto text-center mt-12 pb-8">
-          <p className="text-white text-sm">
-            Start building your first AI coach. No login required.
-          </p>
         </div>
       </div>
     </main>
