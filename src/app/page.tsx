@@ -183,23 +183,21 @@ function HomeContent() {
         )}
 
         {/* Main content area with card and character */}
-        <div className="flex items-start justify-center">
-          <div className="w-full max-w-3xl">
-            {/* White card container */}
-            <div className="bg-white rounded-2xl shadow-2xl overflow-hidden">
-              <IntakeFlow />
-            </div>
-
-            {/* Sticky CTA Footer */}
-            <div className="text-center mt-8 pb-8">
-              <p className="text-white text-sm">
-                Start building your first AI coach. No login required.
-              </p>
-            </div>
+        <div className="relative max-w-4xl mx-auto">
+          {/* White card container */}
+          <div className="bg-white rounded-2xl shadow-2xl overflow-hidden">
+            <IntakeFlow />
           </div>
 
-          {/* Character illustration - hidden on smaller screens */}
-          <div className="hidden xl:flex flex-shrink-0">
+          {/* Sticky CTA Footer */}
+          <div className="text-center mt-8 pb-8">
+            <p className="text-white text-sm">
+              Start building your first AI coach. No login required.
+            </p>
+          </div>
+
+          {/* Character illustration - positioned absolutely to the right */}
+          <div className="hidden xl:block absolute -right-64 top-0 bottom-0">
             <CharacterIllustration />
           </div>
         </div>
