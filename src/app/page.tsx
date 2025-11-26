@@ -183,15 +183,15 @@ function HomeContent() {
         )}
 
         {/* Main content area with card and character */}
-        <div className="flex items-start justify-center gap-2 lg:gap-4 xl:gap-6">
-          <div className="w-full max-w-2xl">
+        <div className="flex items-start justify-center">
+          <div className="w-full max-w-3xl">
             {/* White card container */}
             <div className="bg-white rounded-2xl shadow-2xl overflow-hidden">
               <IntakeFlow />
             </div>
 
             {/* Sticky CTA Footer */}
-            <div className="text-center mt-12 pb-8">
+            <div className="text-center mt-8 pb-8">
               <p className="text-white text-sm">
                 Start building your first AI coach. No login required.
               </p>
@@ -199,7 +199,7 @@ function HomeContent() {
           </div>
 
           {/* Character illustration - hidden on smaller screens */}
-          <div className="hidden lg:flex flex-shrink-0 h-auto">
+          <div className="hidden xl:flex flex-shrink-0">
             <CharacterIllustration />
           </div>
         </div>
@@ -252,12 +252,12 @@ function BackgroundDecorations() {
  */
 function CharacterIllustration() {
   return (
-    <div className="relative w-auto">
-      {/* Character image - transparent background */}
+    <div className="relative -ml-8 self-stretch flex items-end">
+      {/* Character image - full size with transparent background */}
       <img 
         src="/images/prompt-coach.png" 
         alt="Prompt coach character" 
-        className="w-64 h-auto object-contain"
+        className="h-[500px] w-auto object-contain"
       />
     </div>
   )
