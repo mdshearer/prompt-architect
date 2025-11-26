@@ -183,8 +183,8 @@ function HomeContent() {
         )}
 
         {/* Main content area with card and character */}
-        <div className="flex items-center justify-center gap-4 lg:gap-8">
-          <div className="w-full max-w-4xl">
+        <div className="flex items-start justify-center gap-2 lg:gap-4 xl:gap-6">
+          <div className="w-full max-w-2xl">
             {/* White card container */}
             <div className="bg-white rounded-2xl shadow-2xl overflow-hidden">
               <IntakeFlow />
@@ -199,7 +199,7 @@ function HomeContent() {
           </div>
 
           {/* Character illustration - hidden on smaller screens */}
-          <div className="hidden lg:block flex-shrink-0">
+          <div className="hidden lg:flex flex-shrink-0 h-auto">
             <CharacterIllustration />
           </div>
         </div>
@@ -248,16 +248,16 @@ function BackgroundDecorations() {
 
 /**
  * Character illustration component
- * Shows the character standing next to the card with overlapping hand
+ * Shows the character standing next to the card with transparent background
  */
 function CharacterIllustration() {
   return (
-    <div className="relative -ml-20 lg:-ml-32 h-full flex items-start">
-      {/* Character image - full size standing close */}
+    <div className="relative w-auto">
+      {/* Character image - transparent background */}
       <img 
         src="/images/prompt-coach.png" 
         alt="Prompt coach character" 
-        className="h-full w-auto object-contain object-bottom"
+        className="w-64 h-auto object-contain"
       />
     </div>
   )
