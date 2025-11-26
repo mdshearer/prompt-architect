@@ -197,7 +197,7 @@ function HomeContent() {
           </div>
 
           {/* Character illustration - positioned absolutely to the right, only hand overlaps */}
-          <div className="hidden xl:block absolute right-0 top-8 translate-x-[88%]">
+          <div className="hidden xl:block absolute right-0 top-8 translate-x-full">
             <CharacterIllustration />
           </div>
         </div>
