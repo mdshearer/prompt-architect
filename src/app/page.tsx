@@ -14,6 +14,7 @@
  */
 
 import { useState, useEffect } from 'react'
+import Image from 'next/image'
 import { IntakeProvider, useIntake } from '@/components/onboarding/intake-context'
 import IntakeFlow from '@/components/onboarding/intake-flow'
 import ChatContainer from '@/components/chat/chat-container'
@@ -184,7 +185,7 @@ function HomeContent() {
         {/* Main content area with card and character */}
         <div className="flex items-center justify-center gap-4 lg:gap-8">
           {/* White card container */}
-          <div className="w-full max-w-3xl bg-white rounded-2xl shadow-2xl overflow-hidden">
+          <div className="w-full max-w-4xl bg-white rounded-2xl shadow-2xl overflow-hidden">
             <IntakeFlow />
           </div>
 
@@ -194,12 +195,12 @@ function HomeContent() {
           </div>
         </div>
 
-        {/* Free tier notice */}
-        <div className="text-center mt-8 pb-4">
-          <div className="inline-flex items-center space-x-2 text-sm text-white/80 bg-white/10 backdrop-blur px-5 py-3 rounded-full shadow-sm border border-white/20 hover:bg-white/15 transition-colors">
-            <span className="w-2 h-2 rounded-full bg-[#00C896] animate-pulse" />
-            <span>Create 3 prompts for free. No login.</span>
-          </div>
+        {/* Sticky CTA Footer */}
+        <div className="text-center mt-12 pb-8">
+          <button className="inline-flex items-center gap-3 px-8 py-4 rounded-full bg-[#FFDC00] text-[#464650] font-semibold text-lg shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-200">
+            <Sparkles className="w-5 h-5" />
+            Start building your first AI coach. No login required.
+          </button>
         </div>
       </div>
     </main>
@@ -224,9 +225,14 @@ function HeroSection() {
   return (
     <header className="text-center mb-10">
       {/* Main Tagline - Bold and Simple */}
-      <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-white tracking-tight">
-        Stop Guessing. Start Architecting.
+      <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-white tracking-tight mb-4">
+        Stop wrestling with generic AI. Build your expert coach.
       </h1>
+
+      {/* Sub-headline */}
+      <p className="text-lg sm:text-xl text-white/80 max-w-3xl mx-auto leading-relaxed">
+        Build an AI coach that understands your work and delivers expert guidance consistently. The systematic foundation for everything else you'll do with AI.
+      </p>
     </header>
   )
 }
@@ -316,30 +322,34 @@ function BackgroundDecorations() {
 
 /**
  * Character illustration component
+
  * Shows the character with roll of paper
  */
 function CharacterIllustration() {
   return (
     <div className="relative w-[300px] h-[380px]">
+
       {/* Small sparkles around the character */}
-      <svg className="absolute top-4 right-4 w-6 h-6 text-[#FFDC00]" viewBox="0 0 24 24" fill="currentColor">
+      <svg className="absolute top-4 right-4 w-6 h-6 text-[#FFDC00] animate-pulse" viewBox="0 0 24 24" fill="currentColor">
         <path d="M12 0L14.59 9.41L24 12L14.59 14.59L12 24L9.41 14.59L0 12L9.41 9.41L12 0Z" />
       </svg>
-      <svg className="absolute top-12 left-2 w-4 h-4 text-[#FFDC00]" viewBox="0 0 24 24" fill="currentColor">
+      <svg className="absolute top-12 left-2 w-4 h-4 text-[#FFDC00] animate-pulse delay-100" viewBox="0 0 24 24" fill="currentColor">
         <path d="M12 0L14.59 9.41L24 12L14.59 14.59L12 24L9.41 14.59L0 12L9.41 9.41L12 0Z" />
       </svg>
-      <svg className="absolute bottom-20 right-8 w-5 h-5 text-[#FFDC00]" viewBox="0 0 24 24" fill="currentColor">
+      <svg className="absolute bottom-20 right-8 w-5 h-5 text-[#FFDC00] animate-pulse delay-200" viewBox="0 0 24 24" fill="currentColor">
         <path d="M12 0L14.59 9.41L24 12L14.59 14.59L12 24L9.41 14.59L0 12L9.41 9.41L12 0Z" />
       </svg>
 
       {/* Green circle accent */}
       <div className="absolute bottom-32 left-0 w-8 h-8 rounded-full border-2 border-[#00C896]" />
 
+
       {/* Character image */}
       <img 
         src="/images/character-with-paper.png" 
         alt="Character with roll of paper" 
         className="w-full h-full object-contain"
+
       />
     </div>
   )
