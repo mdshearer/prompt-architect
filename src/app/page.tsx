@@ -196,7 +196,7 @@ function HomeContent() {
         </div>
 
         {/* Sticky CTA Footer */}
-        <div className="text-center mt-12 pb-8">
+        <div className="max-w-4xl mx-auto text-center mt-12 pb-8">
           <p className="text-white text-sm">
             Start building your first AI coach. No login required.
           </p>
