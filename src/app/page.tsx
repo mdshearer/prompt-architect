@@ -197,10 +197,9 @@ function HomeContent() {
 
         {/* Sticky CTA Footer */}
         <div className="text-center mt-12 pb-8">
-          <button className="inline-flex items-center gap-3 px-8 py-4 rounded-full bg-[#FFDC00] text-[#464650] font-semibold text-lg shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-200">
-            <Sparkles className="w-5 h-5" />
+          <p className="text-white text-sm">
             Start building your first AI coach. No login required.
-          </button>
+          </p>
         </div>
       </div>
     </main>
