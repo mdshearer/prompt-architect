@@ -9,37 +9,46 @@
  * @module ai-tool-selector
  */
 
+import Image from 'next/image'
 import { useIntake } from './intake-context'
-import { getAiToolDisplayName, getAiToolDescription } from '@/lib/intake-helpers'
 import CheckIcon from '@/components/ui/check-icon'
 import type { AiTool } from '@/types/intake'
 import { AI_TOOLS } from '@/types/intake'
-import { MessageSquare, Bot, Sparkles, Laptop } from 'lucide-react'
 
 /**
- * Icons for each AI tool
+ * Logo images for each AI tool
  */
-const TOOL_ICONS: Record<AiTool, React.ReactNode> = {
-  chatgpt: <MessageSquare className="w-6 h-6" />,
-  claude: <Bot className="w-6 h-6" />,
-  gemini: <Sparkles className="w-6 h-6" />,
-  copilot: <Laptop className="w-6 h-6" />
+const TOOL_LOGOS: Record<AiTool, string> = {
+  chatgpt: '/assets/chatgpt-logo.png',
+  claude: '/assets/claude-logo.png',
+  gemini: '/assets/gemini-logo.png',
+  copilot: '/assets/copilot-logo.jpg'
 }
 
 /**
- * Brand colors for each tool (for subtle theming)
+ * Descriptions for each AI tool (per spec)
  */
-const TOOL_COLORS: Record<AiTool, string> = {
-  chatgpt: 'hover:border-green-500',
-  claude: 'hover:border-orange-500',
-  gemini: 'hover:border-blue-500',
-  copilot: 'hover:border-cyan-500'
+const TOOL_DESCRIPTIONS: Record<AiTool, string> = {
+  chatgpt: "OpenAI's conversational AI with Projects and Custom Instructions",
+  claude: "Anthropic's AI assistant with Projects and strong reasoning",
+  gemini: "Google's AI with Gems, Workspace Integration, and multimodal capabilities",
+  copilot: "Microsoft's AI assistant with search and Office integration"
+}
+
+/**
+ * Display names for each AI tool
+ */
+const TOOL_NAMES: Record<AiTool, string> = {
+  chatgpt: 'ChatGPT',
+  claude: 'Claude',
+  gemini: 'Gemini',
+  copilot: 'Copilot'
 }
 
 /**
  * AI Tool selector for step 1 of the intake flow
  *
- * Displays a 2x2 grid of AI tool options with icons and descriptions.
+ * Displays a 2x2 grid of AI tool options with logos and descriptions.
  * Clicking an option selects it and advances to step 2.
  *
  * @example
@@ -70,35 +79,33 @@ export default function AiToolSelector() {
               p-6 rounded-xl border-2 transition-all duration-200
               text-left flex items-start gap-4
               ${aiTool === tool
-                ? 'border-optimi-primary bg-optimi-primary/5'
-                : `border-gray-200 bg-white ${TOOL_COLORS[tool]}`
+                ? 'border-optimi-blue bg-optimi-blue/5'
+                : 'border-gray-200 bg-white hover:border-optimi-blue'
               }
-              hover:shadow-md focus:outline-none focus:ring-2 focus:ring-optimi-primary focus:ring-offset-2
+              hover:shadow-md focus:outline-none focus:ring-2 focus:ring-optimi-blue focus:ring-offset-2
             `}
           >
-            {/* Icon */}
-            <div
-              className={`
-                flex-shrink-0 w-12 h-12 rounded-lg flex items-center justify-center
-                ${aiTool === tool
-                  ? 'bg-optimi-primary text-white'
-                  : 'bg-gray-100 text-gray-600'
-                }
-              `}
-            >
-              {TOOL_ICONS[tool]}
+            {/* Logo Image */}
+            <div className="flex-shrink-0 w-12 h-12 rounded-lg flex items-center justify-center bg-white">
+              <Image
+                src={TOOL_LOGOS[tool]}
+                alt={`${TOOL_NAMES[tool]} logo`}
+                width={48}
+                height={48}
+                className="object-contain"
+              />
             </div>
 
             {/* Content */}
             <div className="flex-1">
               <h3 className={`
                 font-semibold text-lg mb-1
-                ${aiTool === tool ? 'text-optimi-primary' : 'text-optimi-gray'}
+                ${aiTool === tool ? 'text-optimi-blue' : 'text-optimi-gray'}
               `}>
-                {getAiToolDisplayName(tool)}
+                {TOOL_NAMES[tool]}
               </h3>
               <p className="text-sm text-gray-500">
-                {getAiToolDescription(tool)}
+                {TOOL_DESCRIPTIONS[tool]}
               </p>
             </div>
 

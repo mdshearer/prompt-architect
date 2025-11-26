@@ -14,6 +14,7 @@
  */
 
 import { useState, useEffect } from 'react'
+import Image from 'next/image'
 import { IntakeProvider, useIntake } from '@/components/onboarding/intake-context'
 import IntakeFlow from '@/components/onboarding/intake-flow'
 import ChatContainer from '@/components/chat/chat-container'
@@ -184,7 +185,7 @@ function HomeContent() {
         {/* Main content area with card and character */}
         <div className="flex items-center justify-center gap-4 lg:gap-8">
           {/* White card container */}
-          <div className="w-full max-w-3xl bg-white rounded-2xl shadow-2xl overflow-hidden">
+          <div className="w-full max-w-4xl bg-white rounded-2xl shadow-2xl overflow-hidden">
             <IntakeFlow />
           </div>
 
@@ -194,12 +195,12 @@ function HomeContent() {
           </div>
         </div>
 
-        {/* Free tier notice */}
-        <div className="text-center mt-8 pb-4">
-          <div className="inline-flex items-center space-x-2 text-sm text-white/80 bg-white/10 backdrop-blur px-5 py-3 rounded-full shadow-sm border border-white/20 hover:bg-white/15 transition-colors">
-            <span className="w-2 h-2 rounded-full bg-[#00C896] animate-pulse" />
-            <span>Create 3 prompts for free. No login.</span>
-          </div>
+        {/* Sticky CTA Footer */}
+        <div className="text-center mt-12 pb-8">
+          <button className="inline-flex items-center gap-3 px-8 py-4 rounded-full bg-[#FFDC00] text-[#464650] font-semibold text-lg shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-200">
+            <Sparkles className="w-5 h-5" />
+            Start building your first AI coach. No login required.
+          </button>
         </div>
       </div>
     </main>
@@ -224,9 +225,14 @@ function HeroSection() {
   return (
     <header className="text-center mb-10">
       {/* Main Tagline - Bold and Simple */}
-      <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-white tracking-tight">
-        Stop Guessing. Start Architecting.
+      <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-white tracking-tight mb-4">
+        Stop wrestling with generic AI. Build your expert coach.
       </h1>
+
+      {/* Sub-headline */}
+      <p className="text-lg sm:text-xl text-white/80 max-w-3xl mx-auto leading-relaxed">
+        Build an AI coach that understands your work and delivers expert guidance consistently. The systematic foundation for everything else you'll do with AI.
+      </p>
     </header>
   )
 }
@@ -316,63 +322,34 @@ function BackgroundDecorations() {
 
 /**
  * Character illustration component
- * Shows the architect character with blueprints
+ * Shows the Prompt Architect mascot character
  */
 function CharacterIllustration() {
   return (
-    <div className="relative w-[200px] h-[350px]">
+    <div className="relative w-[250px] h-[400px]">
       {/* Small sparkles around the character */}
-      <svg className="absolute top-4 right-4 w-6 h-6 text-[#FFDC00]" viewBox="0 0 24 24" fill="currentColor">
+      <svg className="absolute top-4 right-4 w-6 h-6 text-[#FFDC00] animate-pulse" viewBox="0 0 24 24" fill="currentColor">
         <path d="M12 0L14.59 9.41L24 12L14.59 14.59L12 24L9.41 14.59L0 12L9.41 9.41L12 0Z" />
       </svg>
-      <svg className="absolute top-12 left-2 w-4 h-4 text-[#FFDC00]" viewBox="0 0 24 24" fill="currentColor">
+      <svg className="absolute top-12 left-2 w-4 h-4 text-[#FFDC00] animate-pulse delay-100" viewBox="0 0 24 24" fill="currentColor">
         <path d="M12 0L14.59 9.41L24 12L14.59 14.59L12 24L9.41 14.59L0 12L9.41 9.41L12 0Z" />
       </svg>
-      <svg className="absolute bottom-20 right-8 w-5 h-5 text-[#FFDC00]" viewBox="0 0 24 24" fill="currentColor">
+      <svg className="absolute bottom-20 right-8 w-5 h-5 text-[#FFDC00] animate-pulse delay-200" viewBox="0 0 24 24" fill="currentColor">
         <path d="M12 0L14.59 9.41L24 12L14.59 14.59L12 24L9.41 14.59L0 12L9.41 9.41L12 0Z" />
       </svg>
 
       {/* Green circle accent */}
       <div className="absolute bottom-32 left-0 w-8 h-8 rounded-full border-2 border-[#00C896]" />
 
-      {/* Character SVG - Stylized architect figure */}
-      <svg className="w-full h-full" viewBox="0 0 200 350" fill="none">
-        {/* Body/Torso - Green shirt */}
-        <ellipse cx="100" cy="180" rx="55" ry="65" fill="#22C55E" />
-
-        {/* Head */}
-        <circle cx="100" cy="80" r="45" fill="#F5D0B0" />
-
-        {/* Hair */}
-        <path d="M60 65 Q65 30, 100 25 Q135 30, 140 65 Q140 50, 130 45 Q120 40, 100 38 Q80 40, 70 45 Q60 50, 60 65" fill="#1F2937" />
-
-        {/* Face features */}
-        <ellipse cx="85" cy="75" rx="3" ry="4" fill="#1F2937" />
-        <ellipse cx="115" cy="75" rx="3" ry="4" fill="#1F2937" />
-        <path d="M90 95 Q100 102, 110 95" stroke="#C4A484" strokeWidth="2" fill="none" strokeLinecap="round" />
-
-        {/* Neck */}
-        <rect x="85" y="115" width="30" height="20" fill="#F5D0B0" />
-
-        {/* Left arm (gesturing) */}
-        <path d="M45 160 Q20 140, 25 110" stroke="#F5D0B0" strokeWidth="18" fill="none" strokeLinecap="round" />
-        <circle cx="25" cy="105" r="12" fill="#F5D0B0" />
-
-        {/* Right arm (holding blueprints) */}
-        <path d="M155 160 Q175 180, 170 220" stroke="#F5D0B0" strokeWidth="18" fill="none" strokeLinecap="round" />
-
-        {/* Blueprint roll */}
-        <rect x="130" y="180" width="60" height="20" rx="10" fill="#3B82F6" transform="rotate(-30 130 180)" />
-        <rect x="125" y="175" width="15" height="25" rx="7" fill="#60A5FA" transform="rotate(-30 125 175)" />
-        <ellipse cx="175" cy="210" rx="8" ry="10" fill="#93C5FD" transform="rotate(-30 175 210)" />
-
-        {/* Pants */}
-        <path d="M60 230 L50 340 L80 340 L100 260 L120 340 L150 340 L140 230" fill="#374151" />
-
-        {/* Shoes */}
-        <ellipse cx="65" cy="345" rx="18" ry="8" fill="#1F2937" />
-        <ellipse cx="135" cy="345" rx="18" ry="8" fill="#1F2937" />
-      </svg>
+      {/* Character Image */}
+      <Image
+        src="/assets/prompt-architect-character.png"
+        alt="Prompt Architect Character"
+        width={250}
+        height={400}
+        className="object-contain"
+        priority
+      />
     </div>
   )
 }
