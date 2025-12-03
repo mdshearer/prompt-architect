@@ -250,7 +250,6 @@ TOGETHER_AI_API_KEY=your_together_ai_api_key_here
 - Create API key
 - Copy to `.env.local`
 
-**Note:** Legacy Supabase environment variables are no longer used and have been removed.
 
 ### 3. Run Development Server
 ```bash
@@ -412,9 +411,6 @@ border-optimi-green
 
 ### Required:
 - `TOGETHER_AI_API_KEY` - Together.ai API key for AI chat functionality
-
-### Note on Legacy Variables:
-Previous Supabase environment variables (`NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`) have been removed. The app now uses client-side localStorage exclusively.
 
 ## Key Application Constants
 
